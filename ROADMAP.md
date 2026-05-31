@@ -112,6 +112,7 @@ Everything below is fully working in production right now.
 - [ ] **Signature upload** — upload and store a signature image that appears on the invoice
 - [ ] **Multiple invoice themes** — at least one alternate invoice layout/style option
 - [ ] **Invoice notes field** — free-text notes that print below the line items
+- [ ] **Fingerprint / Biometric login** — use device Face ID or fingerprint (WebAuthn / Passkey) as a third login method alongside PIN and password; fastest and most secure option for mobile users
 
 ---
 
@@ -166,12 +167,22 @@ Everything below is fully working in production right now.
 
 *Invoixy as a full-featured platform.*
 
-- [ ] **WhatsApp sharing** — send invoice PDF link directly via WhatsApp
+### 📲 WhatsApp Integration
+- [ ] **Share invoice via WhatsApp** — one-tap button on any invoice to share the PDF link directly to a client's WhatsApp
+- [ ] **Pre-filled message** — auto-compose a professional message with invoice number, amount due, and due date
+- [ ] **WhatsApp Business API** — for high-volume users: automated delivery confirmations and read receipts
+- [ ] **Payment reminder via WhatsApp** — send overdue reminders to clients directly on WhatsApp
+
+### 💳 Payments & Integrations
 - [ ] **Razorpay integration** — embed "Pay Now" link inside the PDF
 - [ ] **UPI payment links** — generate UPI QR code on the invoice
 - [ ] **Google Drive backup** — auto-sync database backups to Drive
+
+### 🇮🇳 GST Compliance
 - [ ] **GSTR-1 export** — generate the JSON format required by the GST Offline Utility
 - [ ] **E-Invoice (IRN)** — direct integration with IRP portal for e-invoice generation
+
+### 🏢 Multi-Business
 - [ ] **Multi-business support** — manage multiple GSTINs from one account
 - [ ] **Multi-currency** — USD, EUR, GBP for export service businesses
 
