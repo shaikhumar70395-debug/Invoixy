@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useRef, useEffect, useCallback } from "react";
-import { setupSecurity, login } from "@/app/actions/auth";
+import { setupSecurity, login, verifyRecoveryCode } from "@/app/actions/auth";
 
 /* ═══════════════════════════════════════════════
    TYPES
@@ -228,9 +228,14 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
   const hiddenInputRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const recoveryRef = useRef<HTMLInputElement>(null);
+
   const isPinMode =
     (isSetup && authType === "PIN") || (!isSetup && selectedAuthType === "PIN");
-  const isReady = !isPinMode || pinValue.length === 6;
+  const isReady = isRecoveryMode 
+    ? true 
+    : (!isPinMode || pinValue.length === 6);
 
   /* Sync to hidden input */
   useEffect(() => {
@@ -267,15 +272,21 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
     e.preventDefault();
     setError(null);
     const fd = new FormData(e.currentTarget);
-    if (isPinMode) fd.set("credential", pinValue);
+    if (!isRecoveryMode && isPinMode) fd.set("credential", pinValue);
 
     startTransition(async () => {
-      const action = isSetup ? login : setupSecurity;
-      if (!isSetup) fd.set("authType", selectedAuthType);
-      const res = await action(fd);
+      let res;
+      if (isRecoveryMode) {
+        res = await verifyRecoveryCode(fd);
+      } else {
+        const action = isSetup ? login : setupSecurity;
+        if (!isSetup) fd.set("authType", selectedAuthType);
+        res = await action(fd);
+      }
+      
       if (res?.error) {
         setError(res.error);
-        if (isPinMode) { setPinValue(""); shake(); }
+        if (isPinMode && !isRecoveryMode) { setPinValue(""); shake(); }
       }
     });
   }
@@ -331,9 +342,11 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
             }}
           >
             {isSetup
-              ? isPinMode
-                ? "Enter your 6-digit PIN to continue"
-                : "Enter your password to continue"
+              ? isRecoveryMode
+                ? "Enter your recovery code"
+                : isPinMode
+                  ? "Enter your 6-digit PIN to continue"
+                  : "Enter your password to continue"
               : "Choose how you'd like to protect your data"}
           </p>
         </div>
@@ -420,8 +433,61 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
             </div>
           )}
 
-          {/* ── PIN MODE ── */}
-          {isPinMode ? (
+          {/* ── RECOVERY MODE ── */}
+          {isRecoveryMode ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              <label
+                htmlFor="code"
+                style={{
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  letterSpacing: "0.13em",
+                  textTransform: "uppercase" as const,
+                  color: "#94a3b8",
+                }}
+              >
+                Recovery Code
+              </label>
+              <input
+                ref={recoveryRef}
+                id="code"
+                name="code"
+                type="text"
+                required
+                autoFocus
+                placeholder="INV-XXXX-XXXX"
+                className="uppercase"
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  borderRadius: 16,
+                  border: "1px solid rgba(226,232,240,0.7)",
+                  padding: "14px 18px",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  fontFamily: "monospace",
+                  letterSpacing: "2px",
+                  color: "#1e293b",
+                  background: "rgba(248,250,252,0.75)",
+                  backdropFilter: "blur(8px)",
+                  boxShadow: "inset 0 1px 3px rgba(0,0,0,0.04)",
+                  outline: "none",
+                  transition: "all 0.2s ease",
+                  textAlign: "center"
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(67,24,255,0.45)";
+                  e.currentTarget.style.boxShadow = "inset 0 1px 3px rgba(0,0,0,0.04), 0 0 0 3.5px rgba(67,24,255,0.10)";
+                  e.currentTarget.style.background = "rgba(255,255,255,0.92)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(226,232,240,0.7)";
+                  e.currentTarget.style.boxShadow = "inset 0 1px 3px rgba(0,0,0,0.04)";
+                  e.currentTarget.style.background = "rgba(248,250,252,0.75)";
+                }}
+              />
+            </div>
+          ) : isPinMode ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
               {/* PIN dots area */}
@@ -664,6 +730,31 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
               )}
             </span>
           </button>
+
+          {isSetup && (
+            <div style={{ textAlign: "center", marginTop: 4 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsRecoveryMode(!isRecoveryMode);
+                  setError(null);
+                }}
+                style={{
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  color: "rgba(148,163,184,0.9)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "color 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#64748b")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(148,163,184,0.9)")}
+              >
+                {isRecoveryMode ? "Back to Login" : "Forgot your PIN/Password?"}
+              </button>
+            </div>
+          )}
         </form>
 
         {/* ── Card footer divider ── */}

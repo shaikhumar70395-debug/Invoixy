@@ -1,5 +1,7 @@
 import { checkSecuritySetup } from "@/app/actions/auth";
 import { SecuritySettingsForm } from "@/components/SecuritySettingsForm";
+import { AutoLockSettingsForm } from "@/components/AutoLockSettingsForm";
+import { AccountRecoveryForm } from "@/components/AccountRecoveryForm";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,8 @@ export default async function SecurityPage() {
           <SecuritySettingsForm currentAuthType={securityInfo.authType} />
         </div>
         <div className="space-y-6">
+          <AutoLockSettingsForm initialMinutes={securityInfo.autoLockMinutes ?? 15} />
+          <AccountRecoveryForm hasRecoveryCode={securityInfo.hasRecoveryCode ?? false} />
           <div className="rounded-2xl border border-zinc-200/80 bg-white/50 p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-2 text-violet-600">
             <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -56,24 +60,6 @@ export default async function SecurityPage() {
               <span><strong>Auto-Lock:</strong> For your security, the dashboard requires re-authentication after an extended period of inactivity.</span>
             </li>
           </ul>
-          </div>
-
-          <div className="rounded-2xl border border-zinc-200/80 bg-white/50 p-6 shadow-sm">
-            <div className="mb-4 flex items-center gap-2 text-zinc-900">
-              <svg className="h-5 w-5 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h3 className="font-semibold text-zinc-900">Recent Login Activity</h3>
-            </div>
-            <ul className="space-y-4 text-sm text-zinc-600">
-              <li className="flex items-center justify-between border-b border-zinc-100 pb-3">
-                <div className="flex flex-col">
-                  <span className="font-medium text-zinc-900">Current Device - Web Browser</span>
-                  <span className="text-xs text-zinc-500 mt-0.5">Active session</span>
-                </div>
-                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Active</span>
-              </li>
-            </ul>
           </div>
         </div>
       </div>

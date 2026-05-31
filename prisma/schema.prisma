@@ -147,6 +147,8 @@ model SecuritySettings {
   id          Int      @id @default(1)
   authEnabled Boolean  @default(true)
   authType    String   @default("PIN") // "PIN" or "PASSWORD"
-  authHash    String?  // Securely hashed password/PIN. Null means it hasn't been set up yet.
-  updatedAt   DateTime @updatedAt
+  authHash        String?  // Securely hashed password/PIN. Null means it hasn't been set up yet.
+  recoveryHash    String?  // Securely hashed one-time backup recovery code.
+  autoLockMinutes Int      @default(15) // Minutes of inactivity before session expires
+  updatedAt       DateTime @updatedAt
 }

@@ -13,16 +13,18 @@ export async function checkSecuritySetup() {
   try {
     const settings = await prisma.securitySettings.findFirst();
     if (!settings) {
-      return { isSetup: false, authEnabled: true, authType: "PIN" };
+      return { isSetup: false, authEnabled: true, authType: "PIN", hasRecoveryCode: false, autoLockMinutes: 15 };
     }
     return {
       isSetup: !!settings.authHash,
       authEnabled: settings.authEnabled,
       authType: settings.authType,
+      hasRecoveryCode: !!settings.recoveryHash,
+      autoLockMinutes: settings.autoLockMinutes,
     };
   } catch (error) {
     console.error("Failed to check security setup:", error);
-    return { isSetup: false, authEnabled: true, authType: "PIN" };
+    return { isSetup: false, authEnabled: true, authType: "PIN", hasRecoveryCode: false, autoLockMinutes: 15 };
   }
 }
 
@@ -161,3 +163,81 @@ export async function updateSecurity(formData: FormData) {
     return { error: "Failed to update security settings." };
   }
 }
+
+export async function generateRecoveryCode() {
+  try {
+    const settings = await prisma.securitySettings.findFirst();
+    if (!settings || !settings.authHash) {
+      return { error: "App not set up yet." };
+    }
+    
+    // Generate a secure readable code like INV-A8B9-C3D4
+    const randomHex = () => Math.random().toString(16).substring(2, 6).toUpperCase();
+    const rawCode = `INV-${randomHex()}-${randomHex()}`;
+    const hashedCode = await hashPassword(rawCode);
+    
+    await prisma.securitySettings.update({
+      where: { id: settings.id },
+      data: { recoveryHash: hashedCode },
+    });
+    
+    return { success: true, code: rawCode };
+  } catch (error) {
+    console.error("Failed to generate recovery code:", error);
+    return { error: "Failed to generate recovery code." };
+  }
+}
+
+export async function verifyRecoveryCode(formData: FormData) {
+  const code = formData.get("code") as string;
+  if (!code) return { error: "Recovery code is required." };
+  
+  try {
+    const settings = await prisma.securitySettings.findFirst();
+    if (!settings || !settings.recoveryHash) {
+      return { error: "No recovery code is set up." };
+    }
+    
+    const isValid = await verifyPassword(code.trim(), settings.recoveryHash);
+    if (!isValid) return { error: "Invalid recovery code." };
+    
+    const token = await signToken("authenticated");
+    const cookieStore = await cookies();
+    cookieStore.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+    
+    // Invalidate the one-time code after successful login
+    await prisma.securitySettings.update({
+      where: { id: settings.id },
+      data: { recoveryHash: null },
+    });
+    
+  } catch (error) {
+    console.error("Recovery failed:", error);
+    return { error: "An error occurred during recovery." };
+  }
+  
+  redirect("/");
+}
+
+export async function updateAutoLock(minutes: number) {
+  try {
+    const settings = await prisma.securitySettings.findFirst();
+    if (!settings) return { error: "App not set up yet." };
+    
+    await prisma.securitySettings.update({
+      where: { id: settings.id },
+      data: { autoLockMinutes: minutes },
+    });
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update auto lock:", error);
+    return { error: "Failed to update auto lock setting." };
+  }
+}
+
