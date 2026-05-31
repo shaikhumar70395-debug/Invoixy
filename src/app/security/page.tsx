@@ -20,20 +20,20 @@ export default async function SecurityPage() {
       </header>
 
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_minmax(400px,0.7fr)] xl:gap-12">
-        <div>
-          <SecuritySettingsForm currentAuthType={securityInfo.authType} />
-        </div>
         <div className="space-y-6">
-          <AutoLockSettingsForm initialMinutes={securityInfo.autoLockMinutes ?? 15} />
+          <SecuritySettingsForm currentAuthType={securityInfo.authType} />
           <AccountRecoveryForm hasRecoveryCode={securityInfo.hasRecoveryCode ?? false} />
-          <div className="rounded-2xl border border-zinc-200/80 bg-white/50 p-6 shadow-sm">
-            <div className="mb-4 flex items-center gap-2 text-violet-600">
+        </div>
+        <div className="space-y-6 flex flex-col h-full">
+          <AutoLockSettingsForm initialMinutes={securityInfo.autoLockMinutes ?? 15} />
+          <div className="rounded-2xl border border-zinc-200/80 bg-white/50 p-6 shadow-sm flex-1 flex flex-col">
+            <div className="mb-6 flex items-center gap-2 text-violet-600">
             <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
             </svg>
             <h3 className="font-semibold text-zinc-900">Security Tips</h3>
           </div>
-          <ul className="space-y-4 text-sm text-zinc-600">
+          <ul className="flex flex-col justify-evenly flex-1 text-sm text-zinc-600">
             <li className="flex gap-3">
               <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
                 <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
