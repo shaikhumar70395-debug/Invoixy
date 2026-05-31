@@ -8,7 +8,7 @@ export default async function LoginPage() {
 
   return (
     <div
-      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-16"
+      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-6 sm:py-16"
       style={{
         /* Rich layered base — not flat white */
         background:
@@ -137,7 +137,7 @@ export default async function LoginPage() {
       <div className="auth-brand-enter relative z-10 flex w-full max-w-[420px] flex-col items-center">
 
         {/* ── Branding ─────────────────────────────────────────────────── */}
-        <div className="mb-5 flex flex-col items-center gap-2.5">
+        <div className="mb-3 sm:mb-5 flex flex-col items-center gap-1.5 sm:gap-2.5">
           {/* Logo glow halo */}
           <div className="relative flex items-center justify-center">
             <div
@@ -221,11 +221,11 @@ export default async function LoginPage() {
 
         {/* Footer */}
         <div
-          className="mt-5 flex items-center gap-2 opacity-0 animate-fade-in-up"
+          className="mt-4 flex items-center gap-1.5 opacity-0 animate-fade-in-up whitespace-nowrap"
           style={{ animationDelay: "0.6s", animationFillMode: "forwards" }}
         >
           <svg
-            className="h-3 w-3"
+            className="h-3 w-3 flex-shrink-0"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -239,10 +239,10 @@ export default async function LoginPage() {
             />
           </svg>
           <span
-            className="text-[11px] font-semibold tracking-[0.06em]"
+            className="text-[11px] font-semibold tracking-[0.04em]"
             style={{ color: "rgba(109,40,217,0.45)" }}
           >
-            End-to-end encrypted · Secured with AES-256
+            End-to-end encrypted · AES-256
           </span>
         </div>
       </div>

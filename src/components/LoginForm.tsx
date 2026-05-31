@@ -95,9 +95,9 @@ function PinKey({
       type="button"
       onPointerDown={handlePointerDown}
       aria-label={isDelete ? "Delete digit" : `Digit ${label}`}
-      className="relative flex items-center justify-center select-none outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-1 rounded-[18px] group"
+      className="relative flex items-center justify-center select-none outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-1 rounded-[16px] sm:rounded-[18px] group"
       style={{
-        height: 62,
+        height: 54,
         background: pressed
           ? "rgba(237,233,254,0.92)"
           : isDelete
@@ -184,7 +184,7 @@ function AuthTab({
     <button
       type="button"
       onClick={onClick}
-      className="relative flex flex-1 items-center justify-center gap-1.5 rounded-[14px] px-3 py-2.5 text-[13px] font-semibold outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+      className="relative flex flex-1 items-center justify-center gap-1 rounded-[12px] px-2 py-2 sm:px-3 sm:py-2.5 text-[12px] sm:text-[13px] font-semibold outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-indigo-500/40 whitespace-nowrap"
       style={{
         color: active ? "#4318ff" : "#94a3b8",
         background: active
@@ -283,7 +283,7 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
   /* ── JSX ────────────────────────────────────── */
   return (
     <div
-      className="w-full rounded-[26px] overflow-hidden"
+      className="w-full rounded-[22px] sm:rounded-[26px] overflow-hidden"
       style={{
         background: "rgba(255,255,255,0.76)",
         backdropFilter: "blur(40px) saturate(200%)",
@@ -306,12 +306,12 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
         }}
       />
 
-      <div style={{ padding: "28px 32px 32px" }}>
+      <div className="px-5 pt-6 pb-6 sm:px-8 sm:pt-7 sm:pb-8">
         {/* ── Header ── */}
-        <div style={{ marginBottom: 24, textAlign: "center" }}>
+        <div style={{ marginBottom: 18, textAlign: "center" }}>
           <h1
             style={{
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: 800,
               letterSpacing: "-0.03em",
               color: "#0f172a",
@@ -422,10 +422,10 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
 
           {/* ── PIN MODE ── */}
           {isPinMode ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
               {/* PIN dots area */}
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <span
                   style={{
                     fontSize: 10.5,
@@ -441,7 +441,7 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
                 {/* Dots row */}
                 <div
                   className={pinShaking ? "pin-shake" : ""}
-                  style={{ display: "flex", gap: 12, alignItems: "center", padding: "4px 0" }}
+                  style={{ display: "flex", gap: 9, alignItems: "center", padding: "2px 0" }}
                 >
                   {Array.from({ length: 6 }).map((_, i) => (
                     <PinDot
@@ -472,7 +472,7 @@ export default function LoginForm({ isSetup, authType }: LoginFormProps) {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(3, 1fr)",
-                  gap: 10,
+                  gap: 8,
                 }}
               >
                 {["1","2","3","4","5","6","7","8","9"].map((d, i) => (
