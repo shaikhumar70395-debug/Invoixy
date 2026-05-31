@@ -75,6 +75,8 @@ Everything below is fully working in production right now.
 - [x] Secure HTTP-only auth cookie (30-day session)
 - [x] Change PIN / password from Security settings page
 - [x] Premium glassmorphic login UI
+- [x] Account recovery codes (one-time backup codes)
+- [x] Configurable session auto-lock
 
 ### 🗄️ Database & Infrastructure
 - [x] Turso libSQL cloud database (production)
