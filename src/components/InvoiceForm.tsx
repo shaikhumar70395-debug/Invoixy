@@ -307,10 +307,10 @@ export function InvoiceForm({
           {draft.lines.map((line, index) => (
             <div
               key={line.id}
-              className="rounded-md border border-zinc-200 bg-zinc-50/50 p-4"
+              className="rounded-xl border border-slate-200/80 bg-slate-50/40 p-4"
             >
               <div className="mb-3 flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   Item {index + 1}
                 </span>
                 {draft.lines.length > 1 ? (
@@ -462,14 +462,14 @@ export function InvoiceForm({
               ))}
             </SelectInput>
           </Field>
-          <label className="flex cursor-pointer items-center gap-2.5 rounded-md border border-zinc-200 bg-zinc-50/80 px-3 py-2.5 sm:col-span-2">
+          <label className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/60 px-3.5 py-2.5 sm:col-span-2">
             <input
               type="checkbox"
               checked={draft.roundOffEnabled}
               onChange={(e) => patch({ roundOffEnabled: e.target.checked })}
-              className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-400"
+              className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
             />
-            <span className="text-sm text-zinc-700">
+            <span className="text-sm font-medium text-slate-700">
               Round total to nearest rupee
             </span>
           </label>

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  invoixy:
+    build: .
+    container_name: invoixy_app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Point Prisma to the volume-mounted SQLite database
+      - DATABASE_URL=file:/app/data/prod.db
+    volumes:
+      # Mount a local ./data folder to /app/data inside the container
+      - ./data:/app/data
+    restart: unless-stopped

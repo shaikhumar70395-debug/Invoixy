@@ -10,6 +10,7 @@ import { Field, TextInput } from "@/components/ui/Field";
 import { IconDocument, IconPrinter, IconTrash } from "@/components/ui/icons";
 import { formatMoney, formatDateDisplay } from "@/lib/format";
 import type { InvoiceDraft, InvoiceTotals, SellerProfile, PaymentStatus } from "@/lib/types";
+import { WhatsAppShareModal } from "@/components/WhatsAppShareModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -110,36 +111,49 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
     draft.meta.dueDate < todayIso;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header and invoice action buttons */}
-      <div className="no-print flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-4">
+      <div className="no-print flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl tabular-nums">
               {draft.meta.invoiceNumber}
             </h1>
             {isOverdue && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-rose-300 bg-rose-100 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-rose-700 animate-pulse">
+              <span className="inline-flex items-center gap-1 rounded-full border border-rose-300 bg-rose-50 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-rose-700 animate-pulse">
                 Overdue
               </span>
             )}
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-zinc-600 font-medium">
-            <span>{draft.buyer.name || "Saved invoice"} · {formatMoney(totals.grandTotal)}</span>
+          <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-slate-500 font-medium">
+            <span>{draft.buyer.name || "Saved invoice"} · <strong className="text-slate-900 font-bold tabular-nums">{formatMoney(totals.grandTotal)}</strong></span>
             {draft.meta.dueDate && (
-              <span className={`text-xs font-medium ${
-                isOverdue ? "text-rose-600" : "text-zinc-500"
+              <span className={`text-xs font-semibold ${
+                isOverdue ? "text-rose-600" : "text-slate-400"
               }`}>
                 Due {formatDateDisplay(draft.meta.dueDate)}
               </span>
             )}
           </div>
         </div>
-        <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:justify-end">
+        <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:justify-end">
+          <WhatsAppShareModal
+            invoiceNumber={draft.meta.invoiceNumber}
+            invoiceDate={draft.meta.invoiceDate}
+            customerName={draft.buyer.name}
+            grandTotal={totals.grandTotal}
+            outstanding={outstanding}
+            dueDate={draft.meta.dueDate}
+            sellerName={seller.companyName}
+            bankName={seller.bankName}
+            bankAccountNo={seller.bankAccountNo}
+            bankIfsc={seller.bankIfsc}
+            className="col-span-2 sm:col-span-1"
+          />
           <a
             href={`/api/invoices/${id}/pdf`}
             download
-            className="col-span-2 inline-flex items-center justify-center gap-2 rounded-md border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-600 focus-visible:ring-offset-2 sm:col-span-1"
+            className="col-span-2 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-900 bg-slate-900 px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition-all duration-150 hover:bg-slate-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-600 focus-visible:ring-offset-2 sm:col-span-1"
           >
             <IconDocument />
             Download PDF
@@ -150,14 +164,14 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
           </Button>
           <Link
             href={`/invoices/${id}/edit`}
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-3.5 py-2 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
           >
             <IconDocument />
             Edit
           </Link>
           <Link
             href={`/invoices/new?duplicate=${id}`}
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-3.5 py-2 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
           >
             <IconDocument />
             Duplicate
@@ -176,10 +190,10 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
       </div>
 
       {/* Payment Tracker Section */}
-      <div className="no-print rounded-xl border border-zinc-200 bg-white p-5 shadow-sm space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-100 pb-3">
+      <div className="no-print rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-3">
           <div className="flex items-center gap-3">
-            <h3 className="text-sm font-semibold text-zinc-900">Payment Tracker</h3>
+            <h3 className="text-sm font-bold text-slate-900">Payment Tracker</h3>
             <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize ${statusColors[payment.paymentStatus]}`}>
               {payment.paymentStatus}
             </span>
@@ -195,46 +209,46 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
 
         {!isEditing ? (
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-lg bg-zinc-50/50 border border-zinc-100 p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+            <div className="rounded-xl bg-slate-50/70 border border-slate-100 p-3.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 Grand Total
               </p>
-              <p className="mt-1 text-lg font-bold text-zinc-900 tabular-nums">
+              <p className="mt-1 text-lg sm:text-xl font-black text-slate-900 tabular-nums">
                 {formatMoney(totals.grandTotal)}
               </p>
             </div>
-            <div className="rounded-lg bg-zinc-50/50 border border-zinc-100 p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+            <div className="rounded-xl bg-slate-50/70 border border-slate-100 p-3.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 Amount Paid
               </p>
-              <p className="mt-1 text-lg font-bold text-zinc-900 tabular-nums text-emerald-600">
+              <p className="mt-1 text-lg sm:text-xl font-black text-emerald-600 tabular-nums">
                 {formatMoney(payment.paidAmount)}
               </p>
             </div>
-            <div className="rounded-lg bg-zinc-50/50 border border-zinc-100 p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+            <div className="rounded-xl bg-slate-50/70 border border-slate-100 p-3.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 Outstanding Balance
               </p>
-              <p className={`mt-1 text-lg font-bold tabular-nums ${outstanding > 0 ? "text-rose-600" : "text-zinc-600"}`}>
+              <p className={`mt-1 text-lg sm:text-xl font-black tabular-nums ${outstanding > 0 ? "text-rose-600" : "text-slate-500"}`}>
                 {formatMoney(outstanding)}
               </p>
             </div>
 
             {payment.paymentDate || payment.paymentMethod || payment.paymentNotes ? (
-              <div className="sm:col-span-3 text-xs text-zinc-600 space-y-1 bg-zinc-50/30 p-3 rounded-lg border border-zinc-100">
+              <div className="sm:col-span-3 text-xs text-slate-600 space-y-1.5 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100 font-medium">
                 {payment.paymentDate ? (
                   <p>
-                    <span className="font-medium text-zinc-500">Payment Date:</span> {payment.paymentDate}
+                    <span className="font-semibold text-slate-400">Payment Date:</span> {payment.paymentDate}
                   </p>
                 ) : null}
                 {payment.paymentMethod ? (
                   <p>
-                    <span className="font-medium text-zinc-500">Payment Method:</span> {payment.paymentMethod}
+                    <span className="font-semibold text-slate-400">Payment Method:</span> {payment.paymentMethod}
                   </p>
                 ) : null}
                 {payment.paymentNotes ? (
                   <p>
-                    <span className="font-medium text-zinc-500">Payment Notes:</span> {payment.paymentNotes}
+                    <span className="font-semibold text-slate-400">Payment Notes:</span> {payment.paymentNotes}
                   </p>
                 ) : null}
               </div>
@@ -243,10 +257,10 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
         ) : (
           <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-1.5 sm:col-span-2 lg:col-span-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-zinc-600">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Payment Status
               </p>
-              <div className="grid grid-cols-3 rounded-lg border border-zinc-200 bg-zinc-100 p-1">
+              <div className="grid grid-cols-3 rounded-xl border border-slate-200 bg-slate-100/80 p-1">
                 {paymentOptions.map((option) => {
                   const active = form.paymentStatus === option.value;
                   return (
@@ -254,10 +268,10 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
                       key={option.value}
                       type="button"
                       onClick={() => handleFormChange("paymentStatus", option.value)}
-                      className={`min-h-10 rounded-md px-2 text-sm font-semibold transition-all ${
+                      className={`min-h-10 rounded-lg px-2 text-sm font-semibold transition-all ${
                         active
-                          ? "bg-white text-zinc-950 shadow-sm"
-                          : "text-zinc-500 hover:text-zinc-800"
+                          ? "bg-white text-slate-950 shadow-xs"
+                          : "text-slate-500 hover:text-slate-900"
                       }`}
                     >
                       {option.label}
@@ -276,7 +290,7 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
                 value={form.paidAmount || ""}
                 onChange={(e) => handleFormChange("paidAmount", parseFloat(e.target.value) || 0)}
                 disabled={form.paymentStatus === "unpaid" || form.paymentStatus === "paid"}
-                className={form.paymentStatus !== "part-paid" ? "bg-zinc-50 cursor-not-allowed" : ""}
+                className={form.paymentStatus !== "part-paid" ? "bg-slate-50 cursor-not-allowed" : ""}
               />
             </Field>
 
@@ -318,16 +332,16 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
         )}
 
         {message ? (
-          <p className="text-xs font-medium text-zinc-600" role="status">
+          <p className="text-xs font-semibold text-slate-600" role="status">
             {message}
           </p>
         ) : null}
       </div>
 
-      {/* Tally Invoice Print Canvas */}
+      {/* Invoice Print Canvas */}
       <div
         id="invoice-print-surface"
-        className="overflow-x-hidden rounded-lg border border-zinc-200 bg-zinc-100/80 p-3 shadow-inner sm:p-4"
+        className="overflow-x-hidden rounded-2xl border border-slate-200/80 bg-slate-100/60 p-3 shadow-inner sm:p-5"
       >
         <InvoicePreview
           seller={seller}

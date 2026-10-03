@@ -41,19 +41,16 @@ export default async function NewInvoicePage({ searchParams }: Props) {
 
   return (
     <div className="space-y-5">
-      <header className="page-heading border-b border-zinc-200 pb-4">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
-          New invoice
+      <header className="page-heading flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-4">
+        <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+          New Invoice
         </h1>
-        <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-zinc-600">
-          Enter buyer and line items on the left. The Tally-style preview on the right
-          updates as you type.
-          {savedDbDraft && (
-            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 border border-indigo-200">
-              ✦ Draft restored
-            </span>
-          )}
-        </p>
+        {savedDbDraft && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Draft restored
+          </span>
+        )}
       </header>
       <InvoiceWorkspace
         seller={seller}

@@ -106,15 +106,13 @@ Everything below is fully working in production right now.
 
 *Small but meaningful quality-of-life improvements based on real usage.*
 
-- [ ] **Dark mode** — full dark theme matching the existing brand palette
 - [ ] **Custom terms & conditions** — save default terms that auto-fill on every invoice
 - [ ] **Flat amount discounts** — currently percentage only; add flat-₹ discount per line item
 - [ ] **Sample/demo data** — one-click load of sample invoices for first-time users
 - [ ] **Better mobile invoice preview** — currently desktop-optimised; improve mobile scaling
 - [ ] **Signature upload** — upload and store a signature image that appears on the invoice
 - [ ] **Multiple invoice themes** — at least one alternate invoice layout/style option
-- [ ] **Invoice notes field** — free-text notes that print below the line items
-- [ ] **Fingerprint / Biometric login** — use device Face ID or fingerprint (WebAuthn / Passkey) as a third login method alongside PIN and password; fastest and most secure option for mobile users
+- [x] **Google OAuth 2.0 Sign-in** — one-click login with Google accounts alongside PIN and password; seamless access for team members
 
 ---
 

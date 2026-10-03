@@ -7,6 +7,7 @@ import { SectionCard } from "@/components/ui/SectionCard";
 import { IconPlus, IconTrash } from "@/components/ui/icons";
 import type { CustomerPreset } from "@/lib/types";
 import { EmptyState } from "@/components/ui/EmptyState";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -104,32 +105,34 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
     <div className="grid gap-6 lg:grid-cols-[1fr_minmax(340px,400px)] lg:gap-8 pb-16">
       {/* Customers List Section */}
       <div className="space-y-4 min-w-0">
-        {/* Search Header */}
-        <form onSubmit={handleSearch} className="flex gap-2 rounded-2xl border border-slate-100 bg-white p-3 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search customers..."
-            className="min-h-10 flex-1 min-w-0 rounded-xl border-none bg-slate-50 px-4 text-sm outline-none focus:ring-2 focus:ring-[#4318ff]/20"
-          />
-          <Button type="submit" variant="primary" className="rounded-xl">
-            Search
-          </Button>
-          {initialQuery ? (
-            <Button type="button" variant="ghost" onClick={handleClearSearch}>
-              Clear
+        {/* Search Header - only show when there are records or an active search */}
+        {(initialCustomers.length > 0 || initialQuery) && (
+          <form onSubmit={handleSearch} className="flex gap-2 rounded-2xl border border-slate-100 bg-white p-3 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search customers by name, GSTIN, or state..."
+              className="min-h-10 flex-1 min-w-0 rounded-xl border-none bg-slate-50 px-4 text-sm outline-none focus:ring-2 focus:ring-[#4318ff]/20"
+            />
+            <Button type="submit" variant="primary" className="rounded-xl">
+              Search
             </Button>
-          ) : null}
-        </form>
+            {initialQuery ? (
+              <Button type="button" variant="ghost" onClick={handleClearSearch}>
+                Clear
+              </Button>
+            ) : null}
+          </form>
+        )}
 
-        <div className="flex items-center justify-between mt-6 mb-2 px-1">
+        <div className="flex items-center justify-between mb-2 px-1">
           <h3 className="font-bold text-slate-900 text-lg">Customer Directory</h3>
-          <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-1 rounded-full tabular-nums">
+          <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-full tabular-nums">
             {initialCustomers.length} records
           </span>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {initialCustomers.length > 0 ? (
             initialCustomers.map((cust) => {
               const active = selected?.id === cust.id;
@@ -142,8 +145,8 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
                 <div
                   key={cust.id}
                   onClick={() => handleSelect(cust)}
-                  className={`flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 ${
-                    active ? "border-[#4318ff] bg-indigo-50/30 shadow-md ring-1 ring-[#4318ff]/20" : "border-slate-100 bg-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-slate-200"
+                  className={`flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                    active ? "border-[#4318ff] bg-indigo-50/40 shadow-xs ring-1 ring-[#4318ff]" : "border-slate-200/80 bg-white shadow-xs hover:border-slate-300 hover:shadow-sm"
                   }`}
                 >
                   {/* Avatar */}
@@ -164,19 +167,40 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
                       </p>
                     ) : null}
                   </div>
-                  <div className="text-right shrink-0">
+                  <div className="text-right shrink-0 flex flex-col items-end gap-1.5">
                     <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-600 uppercase">
                       {cust.stateCode}
                     </span>
+                    <a
+                      href={`/api/export?buyer=${encodeURIComponent(cust.name)}`}
+                      download={`invoices_${cust.name.replace(/[^a-zA-Z0-9_-]/g, "_")}.csv`}
+                      onClick={(e) => e.stopPropagation()}
+                      title={`Export CSV statement for ${cust.name}`}
+                      className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold text-slate-400 hover:text-[#4318ff] hover:bg-indigo-50 transition-colors"
+                    >
+                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      CSV
+                    </a>
                   </div>
                 </div>
               );
             })
           ) : (
-            <EmptyState
-              title="No customer presets found"
-              description={initialQuery ? "Try resetting your search query." : "Save a customer preset to see it here."}
-            />
+            <div className="col-span-full">
+              <EmptyState
+                icon={<span className="text-2xl">👥</span>}
+                title="No customer presets yet"
+                description={
+                  initialQuery
+                    ? "No customers matched your search query. Try clearing the search filter."
+                    : "Save your frequent clients here to auto-fill billing address, state, and GSTIN when issuing new invoices."
+                }
+                hint="Fill out the form on the right to add your first customer"
+                className="min-h-[360px]"
+              />
+            </div>
           )}
         </div>
       </div>
@@ -252,6 +276,34 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
                   Delete Customer
                 </Button>
               </form>
+            ) : null}
+
+            {selected ? (
+              <div className="pt-3 border-t border-slate-200/80 space-y-2">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  Customer Ledger & History
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href={`/api/export?buyer=${encodeURIComponent(selected.name)}`}
+                    download={`invoices_${selected.name.replace(/[^a-zA-Z0-9_-]/g, "_")}.csv`}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-[#4318ff] hover:border-slate-300 transition-colors shadow-2xs"
+                    title={`Download statement for ${selected.name}`}
+                  >
+                    <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export CSV
+                  </a>
+                  <Link
+                    href={`/invoices?buyer=${encodeURIComponent(selected.name)}`}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                  >
+                    <span>Invoices</span>
+                    <span className="text-[10px]">↗</span>
+                  </Link>
+                </div>
+              </div>
             ) : null}
 
             {message ? (

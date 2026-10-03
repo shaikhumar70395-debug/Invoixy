@@ -50,18 +50,52 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return computedHash === hash;
 }
 
+function toBase64Url(str: string): string {
+  const bytes = ENCODER.encode(str);
+  let bin = "";
+  for (let i = 0; i < bytes.byteLength; i++) {
+    bin += String.fromCharCode(bytes[i]);
+  }
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function fromBase64Url(b64: string): string {
+  try {
+    let str = b64.replace(/-/g, "+").replace(/_/g, "/");
+    while (str.length % 4) str += "=";
+    const bin = atob(str);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) {
+      bytes[i] = bin.charCodeAt(i);
+    }
+    return new TextDecoder().decode(bytes);
+  } catch {
+    return atob(b64);
+  }
+}
+
+export interface UserSession {
+  userId?: string;
+  email?: string;
+  name?: string;
+  avatarUrl?: string;
+  activeShopId: string;
+  activeShopName: string;
+  role?: string;
+}
+
 /**
- * Signs a simple payload string to create a secure token.
- * Format: payload.signature
+ * Signs a payload string or object to create a secure token.
+ * Format: payloadB64.signatureHex
  */
-export async function signToken(payload: string): Promise<string> {
+export async function signToken(payload: string | UserSession): Promise<string> {
+  const payloadStr = typeof payload === "string" ? payload : JSON.stringify(payload);
   const key = await getSigningKey();
-  const data = ENCODER.encode(payload);
+  const data = ENCODER.encode(payloadStr);
   const signatureBuffer = await crypto.subtle.sign("HMAC", key, data);
   const signatureHex = bufferToHex(signatureBuffer);
   
-  // Base64 encode the payload to make it URL safe
-  const payloadB64 = btoa(payload);
+  const payloadB64 = toBase64Url(payloadStr);
   return `${payloadB64}.${signatureHex}`;
 }
 
@@ -74,16 +108,17 @@ export async function verifyToken(token: string): Promise<string | null> {
     if (parts.length !== 2) return null;
     
     const [payloadB64, signatureHex] = parts;
-    const payload = atob(payloadB64);
+    const payloadStr = fromBase64Url(payloadB64);
     
     const key = await getSigningKey();
-    const data = ENCODER.encode(payload);
+    const data = ENCODER.encode(payloadStr);
     const signatureUint8 = hexToUint8Array(signatureHex);
     
     const isValid = await crypto.subtle.verify("HMAC", key, signatureUint8 as BufferSource, data);
     
-    return isValid ? payload : null;
+    return isValid ? payloadStr : null;
   } catch {
     return null;
   }
 }
+

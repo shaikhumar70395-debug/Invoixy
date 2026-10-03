@@ -251,49 +251,49 @@ export function InvoiceWorkspace({
             products={products}
           />
 
-          <aside className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
-            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-              Live totals
+          <aside className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Live invoice totals
             </p>
-            <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+            <dl className="mt-3.5 grid gap-2.5 text-xs sm:grid-cols-2">
               <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                <dt className="text-zinc-600">Subtotal</dt>
-                <dd className="font-medium tabular-nums text-zinc-900">
+                <dt className="font-medium text-slate-500">Subtotal</dt>
+                <dd className="font-bold tabular-nums text-slate-800">
                   {formatMoney(totals.subtotal)}
                 </dd>
               </div>
               {draft.taxMode === "intra" ? (
                 <>
                   <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                    <dt className="text-zinc-600">CGST ({totals.cgstRate}%)</dt>
-                    <dd className="font-medium tabular-nums text-zinc-900">
+                    <dt className="font-medium text-slate-500">CGST ({totals.cgstRate}%)</dt>
+                    <dd className="font-bold tabular-nums text-slate-800">
                       {formatMoney(totals.cgstAmount)}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                    <dt className="text-zinc-600">SGST ({totals.sgstRate}%)</dt>
-                    <dd className="font-medium tabular-nums text-zinc-900">
+                    <dt className="font-medium text-slate-500">SGST ({totals.sgstRate}%)</dt>
+                    <dd className="font-bold tabular-nums text-slate-800">
                       {formatMoney(totals.sgstAmount)}
                     </dd>
                   </div>
                 </>
               ) : (
                 <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                  <dt className="text-zinc-600">IGST ({totals.igstRate}%)</dt>
-                  <dd className="font-medium tabular-nums text-zinc-900">
+                  <dt className="font-medium text-slate-500">IGST ({totals.igstRate}%)</dt>
+                  <dd className="font-bold tabular-nums text-slate-800">
                     {formatMoney(totals.igstAmount)}
                   </dd>
                 </div>
               )}
               <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                <dt className="text-zinc-600">Round off</dt>
-                <dd className="font-medium tabular-nums text-zinc-900">
+                <dt className="font-medium text-slate-500">Round off</dt>
+                <dd className="font-bold tabular-nums text-slate-800">
                   {formatMoney(totals.roundOff)}
                 </dd>
               </div>
-              <div className="flex justify-between gap-4 border-t border-zinc-100 pt-2 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between sm:border-t sm:pt-3">
-                <dt className="font-semibold text-zinc-900">Grand total</dt>
-                <dd className="text-lg font-bold tabular-nums text-zinc-900">
+              <div className="flex justify-between gap-4 border-t border-slate-100 pt-3 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between sm:border-t sm:pt-3">
+                <dt className="text-sm font-extrabold text-slate-900">Grand Total</dt>
+                <dd className="text-xl font-black tabular-nums text-slate-950">
                   {formatMoney(totals.grandTotal)}
                 </dd>
               </div>

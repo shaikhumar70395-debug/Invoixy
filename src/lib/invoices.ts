@@ -8,6 +8,7 @@ import {
 } from "@/lib/invoice-number";
 import { prisma } from "@/lib/prisma";
 import { getOrCreateSellerSettings } from "@/lib/seller";
+import { getCurrentSession } from "@/app/actions/auth";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
   InvoiceDraft,
@@ -167,6 +168,8 @@ export async function createNewInvoiceDraft(): Promise<InvoiceDraft> {
 }
 
 export async function createInvoice(draft: InvoiceDraft): Promise<number> {
+  const session = await getCurrentSession();
+  const shopId = session?.activeShopId;
   const seller = await getOrCreateSellerSettings();
   const totals = calculateInvoiceTotals(draft);
   const financialYear = getFinancialYear(new Date(`${draft.meta.invoiceDate}T00:00:00`));
@@ -174,7 +177,7 @@ export async function createInvoice(draft: InvoiceDraft): Promise<number> {
   const invoice = await prisma.$transaction(async (tx) => {
     const sequence = await tx.invoiceSequence.upsert({
       where: { financialYear },
-      create: { financialYear, lastNumber: 1 },
+      create: { financialYear, lastNumber: 1, shopId },
       update: { lastNumber: { increment: 1 } },
     });
     const invoiceNumber = formatInvoiceNumber(
@@ -188,6 +191,7 @@ export async function createInvoice(draft: InvoiceDraft): Promise<number> {
         invoiceNumber,
         financialYear,
         sequenceNumber: sequence.lastNumber,
+        shopId,
         invoiceDate: draft.meta.invoiceDate,
         dueDate: draft.meta.dueDate,
         modeOfPayment: draft.meta.modeOfPayment,
@@ -402,6 +406,12 @@ export async function listInvoices(queryOrFilters: string | InvoiceFilters = "")
   const { q, startDate, endDate, paymentStatus, buyerName, buyerStateName } = filters;
   const andConditions: Prisma.InvoiceWhereInput[] = [];
 
+  const session = await getCurrentSession();
+  const shopId = session?.activeShopId;
+  if (shopId) {
+    andConditions.push({ shopId });
+  }
+
   if (q && q.trim()) {
     const term = q.trim();
     andConditions.push({
@@ -483,6 +493,10 @@ export async function updateInvoicePayment(
 }
 
 export async function getDashboardStats() {
+  const session = await getCurrentSession();
+  const shopId = session?.activeShopId;
+  const shopCondition: Prisma.InvoiceWhereInput = shopId ? { shopId } : {};
+
   const today = new Date();
   const todayIso = today.toISOString().slice(0, 10);
   const monthPrefix = todayIso.slice(0, 7);
@@ -497,14 +511,16 @@ export async function getDashboardStats() {
   const [totals, monthTotals, recentInvoices, topCustomersRaw, allUnpaid, monthlyRaw] =
     await Promise.all([
       prisma.invoice.aggregate({
+        where: shopCondition,
         _count: true,
         _sum: { grandTotal: true, paidAmount: true },
       }),
       prisma.invoice.aggregate({
-        where: { invoiceDate: { startsWith: monthPrefix } },
+        where: { ...shopCondition, invoiceDate: { startsWith: monthPrefix } },
         _sum: { grandTotal: true },
       }),
       prisma.invoice.findMany({
+        where: shopCondition,
         orderBy: [{ invoiceDate: "desc" }, { id: "desc" }],
         take: 8,
         select: {
@@ -519,42 +535,99 @@ export async function getDashboardStats() {
         },
       }),
       prisma.invoice.groupBy({
+        where: shopCondition,
         by: ["buyerName"],
         _sum: { grandTotal: true },
         orderBy: { _sum: { grandTotal: "desc" } },
         take: 5,
       }),
       // All unpaid/part-paid invoices with a dueDate set (for aging)
+      // All unpaid/part-paid invoices with a dueDate set (for aging)
       prisma.invoice.findMany({
         where: {
+          ...shopCondition,
           paymentStatus: { in: ["unpaid", "part-paid"] },
           NOT: { dueDate: "" },
         },
         select: { dueDate: true, grandTotal: true, paidAmount: true },
       }),
-      // Monthly billed+collected for the 6 trailing months (fetched in one query, filtered in JS)
+      // Invoices for all chart periods (fetched in one query, filtered in JS)
       prisma.invoice.findMany({
-        where: {
-          invoiceDate: { gte: monthPrefixes[0] + "-01" },
-        },
+        where: shopCondition,
         select: { invoiceDate: true, grandTotal: true, paidAmount: true },
+        orderBy: { invoiceDate: "asc" },
       }),
     ]);
 
   const totalBilled = roundMoney(totals._sum.grandTotal ?? 0);
   const totalCollected = roundMoney(totals._sum.paidAmount ?? 0);
 
-  // ── 6-month revenue chart ────────────────────────────────────────────
-  const monthlyRevenue = monthPrefixes.map((prefix) => {
-    const rows = monthlyRaw.filter((r) => r.invoiceDate.startsWith(prefix));
-    const billed = roundMoney(rows.reduce((s, r) => s + r.grandTotal, 0));
-    const collected = roundMoney(rows.reduce((s, r) => s + r.paidAmount, 0));
-    const [y, m] = prefix.split("-");
-    const label = new Date(Number(y), Number(m) - 1, 1).toLocaleString("en-IN", {
-      month: "short",
+  // ── Multi-period revenue chart computation (Daily, Weekly, Monthly, Yearly) ──
+  const latestDateStr = monthlyRaw.length ? monthlyRaw[monthlyRaw.length - 1].invoiceDate : todayIso;
+  const baseDate = latestDateStr > todayIso ? new Date(latestDateStr) : today;
+
+  // Daily (Last 14 days)
+  const daily: Array<{ label: string; billed: number; collected: number }> = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - i);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const dateStr = `${y}-${m}-${day}`;
+    const label = d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+    const rows = monthlyRaw.filter((r) => r.invoiceDate === dateStr);
+    daily.push({
+      label,
+      billed: roundMoney(rows.reduce((s, r) => s + r.grandTotal, 0)),
+      collected: roundMoney(rows.reduce((s, r) => s + r.paidAmount, 0)),
     });
-    return { prefix, label, billed, collected };
-  });
+  }
+
+  // Weekly (Last 8 weeks)
+  const weekly: Array<{ label: string; billed: number; collected: number }> = [];
+  for (let i = 7; i >= 0; i--) {
+    const start = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - (i * 7 + 6));
+    const end = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - i * 7);
+    const startStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}-${String(start.getDate()).padStart(2, "0")}`;
+    const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, "0")}-${String(end.getDate()).padStart(2, "0")}`;
+    const label = `${start.getDate()} ${start.toLocaleDateString("en-IN", { month: "short" })} - ${end.getDate()} ${end.toLocaleDateString("en-IN", { month: "short" })}`;
+    const rows = monthlyRaw.filter((r) => r.invoiceDate >= startStr && r.invoiceDate <= endStr);
+    weekly.push({
+      label,
+      billed: roundMoney(rows.reduce((s, r) => s + r.grandTotal, 0)),
+      collected: roundMoney(rows.reduce((s, r) => s + r.paidAmount, 0)),
+    });
+  }
+
+  // Monthly (Trailing 12 months)
+  const monthly: Array<{ label: string; billed: number; collected: number }> = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(baseDate.getFullYear(), baseDate.getMonth() - i, 1);
+    const prefix = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleDateString("en-IN", { month: "short", year: "2-digit" });
+    const rows = monthlyRaw.filter((r) => r.invoiceDate.startsWith(prefix));
+    monthly.push({
+      label,
+      billed: roundMoney(rows.reduce((s, r) => s + r.grandTotal, 0)),
+      collected: roundMoney(rows.reduce((s, r) => s + r.paidAmount, 0)),
+    });
+  }
+
+  // Yearly (Trailing 4 years)
+  const yearly: Array<{ label: string; billed: number; collected: number }> = [];
+  const curYear = baseDate.getFullYear();
+  for (let y = curYear - 3; y <= curYear; y++) {
+    const prefix = String(y);
+    const label = `FY ${String(y).slice(-2)}-${String(y + 1).slice(-2)}`;
+    const rows = monthlyRaw.filter((r) => r.invoiceDate.startsWith(prefix));
+    yearly.push({
+      label,
+      billed: roundMoney(rows.reduce((s, r) => s + r.grandTotal, 0)),
+      collected: roundMoney(rows.reduce((s, r) => s + r.paidAmount, 0)),
+    });
+  }
+
+  const chartData = { daily, weekly, monthly, yearly };
 
   // ── Payment aging buckets ────────────────────────────────────────────
   const agingBuckets = [
@@ -592,13 +665,58 @@ export async function getDashboardStats() {
       name: row.buyerName || "Unknown buyer",
       total: roundMoney(row._sum.grandTotal ?? 0),
     })),
-    monthlyRevenue,
+    monthlyRevenue: monthly.slice(-6),
+    chartData,
     agingBuckets,
   };
 }
 
-export async function listInvoicesForExport() {
+export async function listInvoicesForExport(filters?: {
+  buyerName?: string;
+  startDate?: string;
+  endDate?: string;
+  paymentStatus?: string;
+  q?: string;
+}) {
+  const session = await getCurrentSession();
+  const shopId = session?.activeShopId;
+  const andConditions: Prisma.InvoiceWhereInput[] = [];
+
+  if (shopId) {
+    andConditions.push({ shopId });
+  }
+
+  if (filters?.buyerName && filters.buyerName.trim()) {
+    andConditions.push({
+      buyerName: { contains: filters.buyerName.trim() },
+    });
+  }
+
+  if (filters?.q && filters.q.trim()) {
+    const term = filters.q.trim();
+    andConditions.push({
+      OR: [
+        { invoiceNumber: { contains: term } },
+        { buyerName: { contains: term } },
+        { buyerGstin: { contains: term } },
+      ],
+    });
+  }
+
+  if (filters?.startDate) {
+    andConditions.push({ invoiceDate: { gte: filters.startDate } });
+  }
+
+  if (filters?.endDate) {
+    andConditions.push({ invoiceDate: { lte: filters.endDate } });
+  }
+
+  if (filters?.paymentStatus && filters.paymentStatus !== "all") {
+    andConditions.push({ paymentStatus: filters.paymentStatus });
+  }
+
   return prisma.invoice.findMany({
+    where: andConditions.length > 0 ? { AND: andConditions } : undefined,
     orderBy: [{ invoiceDate: "desc" }, { id: "desc" }],
     include: { lines: { orderBy: { lineOrder: "asc" } } },
   });

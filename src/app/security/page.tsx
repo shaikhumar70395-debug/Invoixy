@@ -1,66 +1,121 @@
-import { checkSecuritySetup } from "@/app/actions/auth";
-import { SecuritySettingsForm } from "@/components/SecuritySettingsForm";
+import { checkSecuritySetup, getCurrentSession } from "@/app/actions/auth";
 import { AutoLockSettingsForm } from "@/components/AutoLockSettingsForm";
-import { AccountRecoveryForm } from "@/components/AccountRecoveryForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function SecurityPage() {
   const securityInfo = await checkSecuritySetup();
+  const session = await getCurrentSession();
+
+  const displayName = session?.name || "Account User";
+  const userEmail = session?.email || "Signed in with Google";
+  const initials = (session?.name || session?.email || "U")
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <div className="pb-12">
-      <header className="mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900">
-          Security & Access
+    <div className="pb-16 max-w-4xl mx-auto space-y-6">
+      {/* Page Header */}
+      <header className="border-b border-slate-200/80 pb-4">
+        <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+          Security
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-          Manage your authentication preferences and secure your account.
-        </p>
       </header>
 
-      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_minmax(400px,0.7fr)] xl:gap-12">
-        <div className="space-y-6">
-          <SecuritySettingsForm currentAuthType={securityInfo.authType} />
-          <AccountRecoveryForm hasRecoveryCode={securityInfo.hasRecoveryCode ?? false} />
+      {/* Account Info & Sign Out */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            {session?.avatarUrl ? (
+              <img
+                src={session.avatarUrl}
+                alt={displayName}
+                referrerPolicy="no-referrer"
+                className="h-12 w-12 rounded-full object-cover ring-2 ring-slate-100"
+              />
+            ) : (
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
+                {initials}
+              </div>
+            )}
+            <div>
+              <p className="text-base font-bold text-slate-900">{displayName}</p>
+              <p className="text-xs text-slate-500 font-medium">{userEmail}</p>
+            </div>
+          </div>
+
+          <form
+            action={async () => {
+              "use server";
+              const { logout } = await import("@/app/actions/auth");
+              await logout();
+            }}
+          >
+            <button
+              type="submit"
+              className="w-full sm:w-auto rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-colors"
+            >
+              Sign Out
+            </button>
+          </form>
         </div>
-        <div className="space-y-6 flex flex-col h-full">
-          <AutoLockSettingsForm initialMinutes={securityInfo.autoLockMinutes ?? 15} />
-          <div className="rounded-2xl border border-zinc-200/80 bg-white/50 p-6 shadow-sm flex-1 flex flex-col">
-            <div className="mb-6 flex items-center gap-2 text-violet-600">
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-            </svg>
-            <h3 className="font-semibold text-zinc-900">Security Tips</h3>
-          </div>
-          <ul className="flex flex-col justify-evenly flex-1 text-sm text-zinc-600">
-            <li className="flex gap-3">
-              <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
-                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span><strong>Keep your PIN safe:</strong> Never share your 6-digit access code with employees or third parties.</span>
-            </li>
-            <li className="flex gap-3">
-              <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600">
-                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span><strong>Biometric Login:</strong> Fingerprint and Face ID support is coming in v1.1.0 to make access even faster.</span>
-            </li>
-            <li className="flex gap-3">
-              <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span><strong>Auto-Lock:</strong> For your security, the dashboard requires re-authentication after an extended period of inactivity.</span>
-            </li>
-          </ul>
-          </div>
+      </div>
+
+      {/* Auto-Lock Settings */}
+      <AutoLockSettingsForm initialMinutes={securityInfo.autoLockMinutes ?? 15} />
+
+      {/* Data Backups */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs space-y-4">
+        <div>
+          <h2 className="text-base font-bold text-slate-900">Data Backups</h2>
+          <p className="text-xs font-medium text-slate-500 mt-0.5">
+            Export your sales data or download a full database snapshot.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <a
+            href="/api/export"
+            download="gst_invoices_export.csv"
+            className="flex items-center justify-between gap-3 p-4 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-slate-100/80 hover:border-slate-300 transition-all group"
+          >
+            <div>
+              <p className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                Export Invoices (CSV)
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Spreadsheet-ready summary for accounts
+              </p>
+            </div>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-600 group-hover:text-indigo-600 transition-colors">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </span>
+          </a>
+
+          <a
+            href="/api/backup"
+            download="invoixy-database.db"
+            className="flex items-center justify-between gap-3 p-4 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-slate-100/80 hover:border-slate-300 transition-all group"
+          >
+            <div>
+              <p className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                Database Backup (.db)
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Complete SQLite archive
+              </p>
+            </div>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-600 group-hover:text-indigo-600 transition-colors">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </span>
+          </a>
         </div>
       </div>
     </div>

@@ -3,7 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createPrismaClient } from "@/lib/db";
-import { hashPassword, verifyPassword, signToken } from "@/lib/auth";
+import { hashPassword, verifyPassword, signToken, verifyToken, type UserSession } from "@/lib/auth";
+import { getOrCreateDefaultShop, getUserShops, createShopForUser } from "@/lib/shops";
 import { SetupSecuritySchema, LoginSchema, UpdateSecuritySchema } from "@/lib/schema";
 
 const prisma = createPrismaClient();
@@ -60,8 +61,14 @@ export async function setupSecurity(formData: FormData) {
       });
     }
 
-    // Set cookie and login
-    const token = await signToken("authenticated");
+    // Set cookie and login with default shop
+    const def = await getOrCreateDefaultShop();
+    const session: UserSession = {
+      activeShopId: def.id,
+      activeShopName: def.name,
+      role: "OWNER",
+    };
+    const token = await signToken(session);
     const cookieStore = await cookies();
     cookieStore.set(COOKIE_NAME, token, {
       httpOnly: true,
@@ -102,7 +109,13 @@ export async function login(formData: FormData) {
       return { error: "Invalid credential." };
     }
 
-    const token = await signToken("authenticated");
+    const def = await getOrCreateDefaultShop();
+    const session: UserSession = {
+      activeShopId: def.id,
+      activeShopName: def.name,
+      role: "OWNER",
+    };
+    const token = await signToken(session);
     const cookieStore = await cookies();
     cookieStore.set(COOKIE_NAME, token, {
       httpOnly: true,
@@ -201,7 +214,13 @@ export async function verifyRecoveryCode(formData: FormData) {
     const isValid = await verifyPassword(code.trim(), settings.recoveryHash);
     if (!isValid) return { error: "Invalid recovery code." };
     
-    const token = await signToken("authenticated");
+    const def = await getOrCreateDefaultShop();
+    const session: UserSession = {
+      activeShopId: def.id,
+      activeShopName: def.name,
+      role: "OWNER",
+    };
+    const token = await signToken(session);
     const cookieStore = await cookies();
     cookieStore.set(COOKIE_NAME, token, {
       httpOnly: true,
@@ -241,3 +260,227 @@ export async function updateAutoLock(minutes: number) {
   }
 }
 
+export async function getCurrentSession(): Promise<UserSession | null> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(COOKIE_NAME)?.value;
+    if (!token) return null;
+    const payloadStr = await verifyToken(token);
+    if (!payloadStr) return null;
+    try {
+      const parsed = JSON.parse(payloadStr) as UserSession;
+      if (parsed.activeShopId) return parsed;
+    } catch {
+      // Legacy string token
+    }
+    const def = await getOrCreateDefaultShop();
+    return {
+      activeShopId: def.id,
+      activeShopName: def.name,
+      role: "OWNER",
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function getUserShopsAction() {
+  try {
+    const session = await getCurrentSession();
+    return await getUserShops(session?.userId);
+  } catch (error) {
+    console.error("Failed to get user shops:", error);
+    return [];
+  }
+}
+
+export async function switchActiveShopAction(shopId: string) {
+  try {
+    const current = await getCurrentSession();
+    if (!current) return { error: "Not authenticated" };
+
+    const targetShop = await prisma.shop.findUnique({
+      where: { id: shopId },
+    });
+    if (!targetShop) return { error: "Shop not found" };
+
+    const newSession: UserSession = {
+      ...current,
+      activeShopId: targetShop.id,
+      activeShopName: targetShop.name,
+    };
+
+    const token = await signToken(newSession);
+    const cookieStore = await cookies();
+    cookieStore.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to switch shop:", error);
+    return { error: "Failed to switch shop" };
+  }
+}
+
+export async function createNewShopAction(name: string) {
+  try {
+    const current = await getCurrentSession();
+    if (!current) return { error: "Not authenticated" };
+
+    const newShop = await createShopForUser(name, current.userId || "admin-user");
+
+    const newSession: UserSession = {
+      ...current,
+      activeShopId: newShop.id,
+      activeShopName: newShop.name,
+    };
+
+    const token = await signToken(newSession);
+    const cookieStore = await cookies();
+    cookieStore.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+
+    return { success: true, shop: newShop };
+  } catch (error) {
+    console.error("Failed to create shop:", error);
+    return { error: "Failed to create shop" };
+  }
+}
+
+export async function emailLoginAction({
+  email,
+  name,
+  shopName,
+}: {
+  email: string;
+  name?: string;
+  shopName?: string;
+}) {
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes("@")) {
+      return { error: "Please enter a valid business email." };
+    }
+
+    // Upsert user
+    const user = await prisma.user.upsert({
+      where: { email: cleanEmail },
+      create: {
+        email: cleanEmail,
+        name: name?.trim() || cleanEmail.split("@")[0],
+      },
+      update: {
+        name: name?.trim() || undefined,
+      },
+    });
+
+    // Ensure shop
+    let shops = await getUserShops(user.id);
+    if (!shops || shops.length === 0) {
+      if (shopName?.trim()) {
+        const newShop = await createShopForUser(shopName.trim(), user.id);
+        shops = [newShop];
+      } else {
+        const defaultShop = await getOrCreateDefaultShop();
+        const existingMember = await prisma.shopMember.findUnique({
+          where: { userId_shopId: { userId: user.id, shopId: defaultShop.id } },
+        });
+        if (!existingMember) {
+          await prisma.shopMember.create({
+            data: {
+              userId: user.id,
+              shopId: defaultShop.id,
+              role: "OWNER",
+            },
+          });
+        }
+        shops = [{ id: defaultShop.id, name: defaultShop.name, slug: defaultShop.slug, role: "OWNER" }];
+      }
+    }
+
+    const activeShop = shops[0];
+    const session: UserSession = {
+      userId: user.id,
+      email: user.email,
+      name: user.name || user.email.split("@")[0],
+      avatarUrl: user.avatarUrl || undefined,
+      activeShopId: activeShop.id,
+      activeShopName: activeShop.name,
+      role: activeShop.role || "OWNER",
+    };
+
+    const token = await signToken(session);
+    const cookieStore = await cookies();
+    cookieStore.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Email login failed:", error);
+    return { error: "Unable to sign in. Please try again." };
+  }
+}
+
+export async function demoLoginAction() {
+  try {
+    const defaultShop = await getOrCreateDefaultShop();
+    const demoEmail = "demo@invoixy.com";
+
+    const user = await prisma.user.upsert({
+      where: { email: demoEmail },
+      create: {
+        email: demoEmail,
+        name: "Demo Store Owner",
+      },
+      update: {},
+    });
+
+    const existingMember = await prisma.shopMember.findUnique({
+      where: { userId_shopId: { userId: user.id, shopId: defaultShop.id } },
+    });
+    if (!existingMember) {
+      await prisma.shopMember.create({
+        data: {
+          userId: user.id,
+          shopId: defaultShop.id,
+          role: "OWNER",
+        },
+      });
+    }
+
+    const session: UserSession = {
+      userId: user.id,
+      email: user.email,
+      name: user.name || "Demo Store Owner",
+      activeShopId: defaultShop.id,
+      activeShopName: defaultShop.name,
+      role: "OWNER",
+    };
+
+    const token = await signToken(session);
+    const cookieStore = await cookies();
+    cookieStore.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Demo login failed:", error);
+    return { error: "Demo sign-in failed. Please try again." };
+  }
+}

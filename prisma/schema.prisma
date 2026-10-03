@@ -9,9 +9,9 @@ datasource db {
   provider = "sqlite"
 }
 
-/// One row (id = 1) holds the seller / company profile.
+/// One row holds the seller / company profile for a shop.
 model SellerSettings {
-  id            Int      @id @default(1)
+  id            Int      @id @default(autoincrement())
   companyName   String
   address       String
   pan           String
@@ -26,6 +26,8 @@ model SellerSettings {
   declaration   String
   invoicePrefix String   @default("ECMUM")
   logoDataUrl   String   @default("")
+  shopId        String?  @unique
+  shop          Shop?    @relation(fields: [shopId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -69,6 +71,8 @@ model Invoice {
   paymentDate        String   @default("")
   paymentMethod      String   @default("")
   paymentNotes       String   @default("")
+  shopId             String?
+  shop               Shop?    @relation(fields: [shopId], references: [id], onDelete: Cascade)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   lines              InvoiceLine[]
@@ -77,6 +81,7 @@ model Invoice {
   @@index([buyerName])
   @@index([buyerGstin])
   @@index([paymentStatus])
+  @@index([shopId])
 }
 
 model InvoiceLine {
@@ -102,6 +107,8 @@ model InvoiceLine {
 model InvoiceSequence {
   financialYear String   @id
   lastNumber    Int
+  shopId        String?
+  shop          Shop?    @relation(fields: [shopId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -113,11 +120,14 @@ model Customer {
   gstin     String
   stateName String
   stateCode String
+  shopId    String?
+  shop      Shop?    @relation(fields: [shopId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([name])
   @@index([gstin])
+  @@index([shopId])
 }
 
 model Product {
@@ -127,11 +137,14 @@ model Product {
   unit                  String
   defaultRate           Float
   defaultGstRatePercent Float    @default(5)
+  shopId                String?
+  shop                  Shop?    @relation(fields: [shopId], references: [id], onDelete: Cascade)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
   @@index([description])
   @@index([hsnSac])
+  @@index([shopId])
 }
 
 /// Singleton (id = 1) that persists the in-progress new-invoice draft to the DB.
@@ -139,6 +152,8 @@ model Product {
 model InvoiceDraftRecord {
   id        Int      @id @default(1)
   draftJson String   @default("{}")
+  shopId    String?  @unique
+  shop      Shop?    @relation(fields: [shopId], references: [id], onDelete: Cascade)
   updatedAt DateTime @updatedAt
 }
 
@@ -152,3 +167,53 @@ model SecuritySettings {
   autoLockMinutes Int      @default(15) // Minutes of inactivity before session expires
   updatedAt       DateTime @updatedAt
 }
+
+
+// ─────────────────────────────────────────────────────────────
+// Multi-Tenant Architecture (Users, Shops & Memberships)
+// ─────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  avatarUrl     String?
+  googleId      String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  memberships   ShopMember[]
+
+  @@index([email])
+}
+
+model Shop {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  members       ShopMember[]
+  sellerProfile SellerSettings?
+  invoices      Invoice[]
+  customers     Customer[]
+  products      Product[]
+  sequences     InvoiceSequence[]
+  drafts        InvoiceDraftRecord[]
+
+  @@index([slug])
+}
+
+model ShopMember {
+  id        String   @id @default(cuid())
+  userId    String
+  shopId    String
+  role      String   @default("OWNER") // "OWNER" | "MEMBER"
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, shopId])
+  @@index([userId])
+  @@index([shopId])
+}
+

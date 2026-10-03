@@ -7,7 +7,7 @@ type Props = {
 
 export function SectionCard({ title, description, action, children }: Props) {
   return (
-    <section className="rounded-2xl border border-slate-100 bg-white shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
+    <section className="rounded-2xl border border-slate-200/80 bg-white shadow-xs">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
         <div>
           <h3 className="text-base font-bold tracking-tight text-slate-900">{title}</h3>

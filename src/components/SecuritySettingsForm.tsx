@@ -18,60 +18,77 @@ export function SecuritySettingsForm({ currentAuthType }: { currentAuthType: str
       const res = await updateSecurity(formData);
       if (res?.error) {
         setMessage({ type: "error", text: res.error });
-      } else if (res?.success) {
-        setMessage({ type: "success", text: res.success });
+      } else {
+        setMessage({ type: "success", text: "Security settings updated successfully." });
         (event.target as HTMLFormElement).reset();
       }
     });
   }
 
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-6 sm:p-8 shadow-xl shadow-zinc-200/40 backdrop-blur-sm">
-      <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 text-violet-600">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
+    <div className="space-y-6">
+      {message && (
+        <div
+          className={`rounded-xl p-4 text-sm font-medium ${
+            message.type === "success"
+              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+              : "bg-rose-50 text-rose-800 border border-rose-200"
+          }`}
+        >
+          {message.text}
         </div>
-        <h2 className="text-xl font-bold text-zinc-900">Access Credentials</h2>
-      </div>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {message && (
-          <div className={`rounded-md p-4 text-sm border ${message.type === "error" ? "bg-red-50 text-red-600 border-red-100" : "bg-green-50 text-green-700 border-green-100"}`}>
-            {message.text}
-          </div>
-        )}
+      )}
 
-        <div className="space-y-4">
-          <label className="text-sm font-semibold text-zinc-900">Authentication Type</label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <label className={`relative flex cursor-pointer rounded-xl border p-4 shadow-sm transition-all hover:border-violet-300 ${authType === "PIN" ? "border-violet-600 bg-violet-50/50 ring-1 ring-violet-600" : "border-zinc-200 bg-white"}`}>
-              <input type="radio" name="authTypeToggle" value="PIN" checked={authType === "PIN"} onChange={() => setAuthType("PIN")} className="sr-only" />
-              <div className="flex flex-col">
-                <span className={`block text-sm font-semibold ${authType === "PIN" ? "text-violet-900" : "text-zinc-900"}`}>Numeric PIN</span>
-                <span className={`block text-xs mt-1 ${authType === "PIN" ? "text-violet-700" : "text-zinc-500"}`}>6-digit code for quick access</span>
-              </div>
-              {authType === "PIN" && (
-                <div className="absolute right-4 top-4 text-violet-600">
-                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-zinc-900">
+            Authentication Method
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label
+              className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
+                authType === "PIN"
+                  ? "border-violet-600 bg-violet-50/50 ring-2 ring-violet-600/20"
+                  : "border-zinc-200 hover:border-zinc-300 bg-white"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  name="authTypeSelection"
+                  value="PIN"
+                  checked={authType === "PIN"}
+                  onChange={() => setAuthType("PIN")}
+                  className="h-4 w-4 text-violet-600 focus:ring-violet-500"
+                />
+                <div>
+                  <div className="text-sm font-semibold text-zinc-900">6-Digit PIN</div>
+                  <div className="text-xs text-zinc-500">Quick numeric keypad login</div>
                 </div>
-              )}
+              </div>
             </label>
-            <label className={`relative flex cursor-pointer rounded-xl border p-4 shadow-sm transition-all hover:border-violet-300 ${authType === "PASSWORD" ? "border-violet-600 bg-violet-50/50 ring-1 ring-violet-600" : "border-zinc-200 bg-white"}`}>
-              <input type="radio" name="authTypeToggle" value="PASSWORD" checked={authType === "PASSWORD"} onChange={() => setAuthType("PASSWORD")} className="sr-only" />
-              <div className="flex flex-col">
-                <span className={`block text-sm font-semibold ${authType === "PASSWORD" ? "text-violet-900" : "text-zinc-900"}`}>Text Password</span>
-                <span className={`block text-xs mt-1 ${authType === "PASSWORD" ? "text-violet-700" : "text-zinc-500"}`}>Strong alphanumeric password</span>
-              </div>
-              {authType === "PASSWORD" && (
-                <div className="absolute right-4 top-4 text-violet-600">
-                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+
+            <label
+              className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
+                authType === "PASSWORD"
+                  ? "border-violet-600 bg-violet-50/50 ring-2 ring-violet-600/20"
+                  : "border-zinc-200 hover:border-zinc-300 bg-white"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  name="authTypeSelection"
+                  value="PASSWORD"
+                  checked={authType === "PASSWORD"}
+                  onChange={() => setAuthType("PASSWORD")}
+                  className="h-4 w-4 text-violet-600 focus:ring-violet-500"
+                />
+                <div>
+                  <div className="text-sm font-semibold text-zinc-900">Password</div>
+                  <div className="text-xs text-zinc-500">Alphanumeric text password</div>
                 </div>
-              )}
+              </div>
             </label>
           </div>
         </div>

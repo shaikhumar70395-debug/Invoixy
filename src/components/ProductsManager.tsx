@@ -106,32 +106,34 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
     <div className="grid gap-6 lg:grid-cols-[1fr_minmax(340px,400px)] lg:gap-8 pb-16">
       {/* Products List Section */}
       <div className="space-y-4 min-w-0">
-        {/* Search Header */}
-        <form onSubmit={handleSearch} className="flex gap-2 rounded-2xl border border-slate-100 bg-white p-3 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
-          <input
-            name="q"
-            defaultValue={initialQuery}
-            placeholder="Search products..."
-            className="min-h-10 flex-1 min-w-0 rounded-xl border-none bg-slate-50 px-4 text-sm outline-none focus:ring-2 focus:ring-[#4318ff]/20"
-          />
-          <Button type="submit" variant="primary" className="rounded-xl">
-            Search
-          </Button>
-          {initialQuery ? (
-            <Button type="button" variant="ghost" onClick={handleClearSearch}>
-              Clear
+        {/* Search Header - only show when there are records or active query */}
+        {(initialProducts.length > 0 || initialQuery) && (
+          <form onSubmit={handleSearch} className="flex gap-2 rounded-2xl border border-slate-100 bg-white p-3 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
+            <input
+              name="q"
+              defaultValue={initialQuery}
+              placeholder="Search products by description or HSN..."
+              className="min-h-10 flex-1 min-w-0 rounded-xl border-none bg-slate-50 px-4 text-sm outline-none focus:ring-2 focus:ring-[#4318ff]/20"
+            />
+            <Button type="submit" variant="primary" className="rounded-xl">
+              Search
             </Button>
-          ) : null}
-        </form>
+            {initialQuery ? (
+              <Button type="button" variant="ghost" onClick={handleClearSearch}>
+                Clear
+              </Button>
+            ) : null}
+          </form>
+        )}
 
-        <div className="flex items-center justify-between mt-6 mb-2 px-1">
+        <div className="flex items-center justify-between mb-2 px-1">
           <h3 className="font-bold text-slate-900 text-lg">Product Inventory</h3>
-          <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-1 rounded-full tabular-nums">
+          <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-full tabular-nums">
             {initialProducts.length} items
           </span>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {initialProducts.length > 0 ? (
             initialProducts.map((prod) => {
               const active = selected?.id === prod.id;
@@ -140,8 +142,8 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
                 <div
                   key={prod.id}
                   onClick={() => handleSelect(prod)}
-                  className={`flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 ${
-                    active ? "border-[#4318ff] bg-indigo-50/30 shadow-md ring-1 ring-[#4318ff]/20" : "border-slate-100 bg-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-slate-200"
+                  className={`flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                    active ? "border-[#4318ff] bg-indigo-50/40 shadow-xs ring-1 ring-[#4318ff]" : "border-slate-200/80 bg-white shadow-xs hover:border-slate-300 hover:shadow-sm"
                   }`}
                 >
                   {/* Avatar Icon */}
@@ -173,10 +175,19 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
               );
             })
           ) : (
-            <EmptyState
-              title="No product presets found"
-              description={initialQuery ? "Try resetting your search query." : "Save a product preset to see it here."}
-            />
+            <div className="col-span-full">
+              <EmptyState
+                icon={<span className="text-2xl">📦</span>}
+                title="No product presets yet"
+                description={
+                  initialQuery
+                    ? "No products matched your search query. Try clearing the search filter."
+                    : "Save your frequently billed products or service catalog with default rates and HSN codes to generate invoices in seconds."
+                }
+                hint="Fill out the form on the right to add your first product"
+                className="min-h-[360px]"
+              />
+            </div>
           )}
         </div>
       </div>
