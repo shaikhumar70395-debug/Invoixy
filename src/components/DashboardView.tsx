@@ -154,25 +154,21 @@ export function DashboardView({ stats, isLocal = true }: Props) {
 
       {/* Onboarding Guide for New Accounts (Zero Invoices) */}
       {stats.invoiceCount === 0 ? (
-        <div className="rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50/70 via-white to-violet-50/50 p-6 sm:p-8 shadow-sm">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-xs">
           <div className="max-w-xl">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-100/80 px-3 py-1 text-xs font-bold text-[#4318ff] mb-3">
-              <span>🚀</span>
-              <span>Quick Start Guide</span>
-            </div>
-            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight sm:text-2xl">
-              Welcome to your new business dashboard!
+            <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
+              Getting Started
             </h2>
-            <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
-              Complete these simple steps to start issuing compliant GST invoices for your clients.
+            <p className="mt-1 text-sm text-slate-500 leading-relaxed font-medium">
+              Complete these steps to start issuing compliant GST invoices.
             </p>
           </div>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Step 1 */}
-            <div className="flex flex-col justify-between rounded-2xl border border-white bg-white/90 p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 hover:bg-slate-50 hover:border-slate-300 transition-all">
               <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-base font-bold text-[#4318ff] mb-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-700 mb-3 shadow-2xs">
                   1
                 </div>
                 <h3 className="text-sm font-bold text-slate-900">Configure Business Profile</h3>
@@ -182,16 +178,16 @@ export function DashboardView({ stats, isLocal = true }: Props) {
               </div>
               <Link
                 href="/settings"
-                className="mt-4 inline-flex items-center text-xs font-bold text-[#4318ff] hover:text-indigo-700"
+                className="mt-4 inline-flex items-center text-xs font-bold text-[#4318ff] hover:text-indigo-700 transition-colors"
               >
                 Go to Seller Settings →
               </Link>
             </div>
 
             {/* Step 2 */}
-            <div className="flex flex-col justify-between rounded-2xl border border-white bg-white/90 p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 hover:bg-slate-50 hover:border-slate-300 transition-all">
               <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-base font-bold text-emerald-600 mb-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-700 mb-3 shadow-2xs">
                   2
                 </div>
                 <h3 className="text-sm font-bold text-slate-900">Create First Invoice</h3>
@@ -201,16 +197,16 @@ export function DashboardView({ stats, isLocal = true }: Props) {
               </div>
               <Link
                 href="/invoices/new"
-                className="mt-4 inline-flex items-center text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                className="mt-4 inline-flex items-center text-xs font-bold text-[#4318ff] hover:text-indigo-700 transition-colors"
               >
                 Create First Invoice →
               </Link>
             </div>
 
             {/* Step 3 */}
-            <div className="flex flex-col justify-between rounded-2xl border border-white bg-white/90 p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 hover:bg-slate-50 hover:border-slate-300 transition-all">
               <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-base font-bold text-violet-600 mb-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-700 mb-3 shadow-2xs">
                   3
                 </div>
                 <h3 className="text-sm font-bold text-slate-900">Add Presets (Optional)</h3>
@@ -220,7 +216,7 @@ export function DashboardView({ stats, isLocal = true }: Props) {
               </div>
               <Link
                 href="/customers"
-                className="mt-4 inline-flex items-center text-xs font-bold text-violet-600 hover:text-violet-700"
+                className="mt-4 inline-flex items-center text-xs font-bold text-[#4318ff] hover:text-indigo-700 transition-colors"
               >
                 Add Customer Presets →
               </Link>
