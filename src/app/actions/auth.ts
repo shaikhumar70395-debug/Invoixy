@@ -444,25 +444,9 @@ export async function emailLoginAction({
     // Ensure shop
     let shops = await getUserShops(user.id);
     if (!shops || shops.length === 0) {
-      if (shopName?.trim()) {
-        const newShop = await createShopForUser(shopName.trim(), user.id);
-        shops = [newShop];
-      } else {
-        const defaultShop = await getOrCreateDefaultShop();
-        const existingMember = await prisma.shopMember.findUnique({
-          where: { userId_shopId: { userId: user.id, shopId: defaultShop.id } },
-        });
-        if (!existingMember) {
-          await prisma.shopMember.create({
-            data: {
-              userId: user.id,
-              shopId: defaultShop.id,
-              role: "OWNER",
-            },
-          });
-        }
-        shops = [{ id: defaultShop.id, name: defaultShop.name, slug: defaultShop.slug, role: "OWNER" }];
-      }
+      const shopTitle = shopName?.trim() || `${user.name || "My"} Business`;
+      const newShop = await createShopForUser(shopTitle, user.id);
+      shops = [newShop];
     }
 
     const activeShop = shops[0];
@@ -494,7 +478,6 @@ export async function emailLoginAction({
 
 export async function demoLoginAction() {
   try {
-    const defaultShop = await getOrCreateDefaultShop();
     const demoEmail = "demo@invoixy.com";
 
     const user = await prisma.user.upsert({
@@ -506,25 +489,64 @@ export async function demoLoginAction() {
       update: {},
     });
 
-    const existingMember = await prisma.shopMember.findUnique({
-      where: { userId_shopId: { userId: user.id, shopId: defaultShop.id } },
+    // Ensure dedicated Demo shop exists
+    let demoShop = await prisma.shop.findUnique({
+      where: { slug: "invoixy-demo-store" },
     });
-    if (!existingMember) {
-      await prisma.shopMember.create({
+
+    if (!demoShop) {
+      demoShop = await prisma.shop.create({
         data: {
-          userId: user.id,
-          shopId: defaultShop.id,
-          role: "OWNER",
+          name: "Apex Electronics (Demo)",
+          slug: "invoixy-demo-store",
+          members: {
+            create: {
+              userId: user.id,
+              role: "OWNER",
+            },
+          },
+          sellerProfile: {
+            create: {
+              companyName: "Apex Electronics (Demo)",
+              address: "Demo Outlet - Shop 12-14, Phoenix Galleria Mall, Kurla West, Mumbai, Maharashtra 400070",
+              pan: "AAEPA4829G",
+              gstin: "27AAEPA4829G1Z4",
+              stateName: "MAHARASHTRA",
+              stateCode: "27",
+              phone: "+91 98204 77319",
+              bankName: "HDFC BANK",
+              bankAccountNo: "50200084920194",
+              bankIfsc: "HDFC0000128",
+              bankBranch: "Kurla West Branch, Mumbai",
+              declaration: "Demo invoice generated for testing purposes. Shows actual price of electronic goods.",
+              invoicePrefix: "DEMO",
+              logoDataUrl: "",
+            },
+          },
         },
       });
+    } else {
+      // Ensure demo user has membership in demo shop
+      const existingMember = await prisma.shopMember.findUnique({
+        where: { userId_shopId: { userId: user.id, shopId: demoShop.id } },
+      });
+      if (!existingMember) {
+        await prisma.shopMember.create({
+          data: {
+            userId: user.id,
+            shopId: demoShop.id,
+            role: "OWNER",
+          },
+        });
+      }
     }
 
     const session: UserSession = {
       userId: user.id,
       email: user.email,
       name: user.name || "Demo Store Owner",
-      activeShopId: defaultShop.id,
-      activeShopName: defaultShop.name,
+      activeShopId: demoShop.id,
+      activeShopName: demoShop.name,
       role: "OWNER",
     };
 

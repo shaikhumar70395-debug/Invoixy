@@ -75,25 +75,9 @@ export async function GET(req: Request) {
     // 4. Ensure user has a shop
     let shops = await getUserShops(user.id);
     if (!shops || shops.length === 0) {
-      // Check if there is an unowned initial shop (zero members)
-      const unownedShop = await prisma.shop.findFirst({
-        where: { members: { none: {} } },
-      });
-
-      if (unownedShop) {
-        await prisma.shopMember.create({
-          data: {
-            userId: user.id,
-            shopId: unownedShop.id,
-            role: "OWNER",
-          },
-        });
-        shops = [{ id: unownedShop.id, name: unownedShop.name, slug: unownedShop.slug, role: "OWNER" }];
-      } else {
-        const shopName = `${user.name || "My"} Business`;
-        const newShop = await createShopForUser(shopName, user.id);
-        shops = [newShop];
-      }
+      const shopName = `${user.name || "My"} Business`;
+      const newShop = await createShopForUser(shopName, user.id);
+      shops = [newShop];
     }
 
     const activeShop = shops[0];
