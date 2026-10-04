@@ -1,11 +1,19 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { formatMoney, formatDateDisplay } from "@/lib/format";
 import Link from "next/link";
 import { IconDocument, IconCopy } from "@/components/ui/icons";
 import { RevenueChart } from "@/components/RevenueChart";
 import { AgingChart } from "@/components/AgingChart";
 import { EmptyState } from "@/components/ui/EmptyState";
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
 
 type Props = {
   stats: {
@@ -57,13 +65,19 @@ const statusColors: Record<string, string> = {
 };
 
 export function DashboardView({ stats, isLocal = true }: Props) {
+  const [greeting, setGreeting] = useState("Good morning");
+
+  useEffect(() => {
+    setGreeting(getGreeting());
+  }, []);
+
   const todayIso = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="space-y-6 pb-24 max-w-7xl mx-auto">
       {/* Header Greeting */}
       <div className="mb-6">
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Good morning 👋</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{greeting} 👋</h1>
         <p className="text-base text-slate-600 mt-1 font-medium">Here's what's happening with your business.</p>
       </div>
 
