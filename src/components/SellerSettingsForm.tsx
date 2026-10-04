@@ -93,81 +93,70 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
   return (
     <form onSubmit={onSubmit} className="max-w-6xl mx-auto space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* Left Column: Company & Terms */}
-        <div className="space-y-6">
-          <SectionCard title="Company Details" description="Details printed on every invoice">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Company name">
-                <TextInput
-                  value={form.companyName}
-                  onChange={(e) => update("companyName", e.target.value)}
+        {/* Left Column: Company Details */}
+        <SectionCard title="Company Details" description="Details printed on every invoice">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Company name">
+              <TextInput
+                value={form.companyName}
+                onChange={(e) => update("companyName", e.target.value)}
+                required
+              />
+            </Field>
+            <Field label="Phone">
+              <TextInput
+                value={form.phone}
+                onChange={(e) => update("phone", e.target.value)}
+              />
+            </Field>
+            <div className="sm:col-span-2">
+              <Field label="Address">
+                <TextArea
+                  value={form.address}
+                  onChange={(e) => update("address", e.target.value)}
                   required
                 />
               </Field>
-              <Field label="Phone">
-                <TextInput
-                  value={form.phone}
-                  onChange={(e) => update("phone", e.target.value)}
-                />
-              </Field>
-              <div className="sm:col-span-2">
-                <Field label="Address">
-                  <TextArea
-                    value={form.address}
-                    onChange={(e) => update("address", e.target.value)}
-                    required
-                  />
-                </Field>
-              </div>
-              <Field label="PAN">
-                <TextInput
-                  value={form.pan}
-                  onChange={(e) => update("pan", e.target.value)}
-                />
-              </Field>
-              <Field label="GSTIN / UIN">
-                <TextInput
-                  value={form.gstin}
-                  onChange={(e) => update("gstin", e.target.value)}
-                />
-              </Field>
-              <div className="grid grid-cols-2 gap-3 sm:col-span-2">
-                <Field label="State name">
-                  <TextInput
-                    value={form.stateName}
-                    onChange={(e) => update("stateName", e.target.value)}
-                  />
-                </Field>
-                <Field label="State code" hint="e.g. 27">
-                  <TextInput
-                    value={form.stateCode}
-                    onChange={(e) => update("stateCode", e.target.value)}
-                    maxLength={2}
-                  />
-                </Field>
-              </div>
-              <div className="sm:col-span-2">
-                <Field label="Invoice prefix">
-                  <TextInput
-                    value={form.invoicePrefix}
-                    onChange={(e) => update("invoicePrefix", e.target.value)}
-                  />
-                </Field>
-              </div>
             </div>
-          </SectionCard>
-
-          <SectionCard title="Declaration & Terms" description="Default declaration printed on invoice footer">
-            <Field label="Declaration text">
-              <TextArea
-                value={form.declaration}
-                onChange={(e) => update("declaration", e.target.value)}
+            <Field label="PAN">
+              <TextInput
+                value={form.pan}
+                onChange={(e) => update("pan", e.target.value)}
               />
             </Field>
-          </SectionCard>
-        </div>
+            <Field label="GSTIN / UIN">
+              <TextInput
+                value={form.gstin}
+                onChange={(e) => update("gstin", e.target.value)}
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-3 sm:col-span-2">
+              <Field label="State name">
+                <TextInput
+                  value={form.stateName}
+                  onChange={(e) => update("stateName", e.target.value)}
+                />
+              </Field>
+              <Field label="State code" hint="e.g. 27">
+                <TextInput
+                  value={form.stateCode}
+                  onChange={(e) => update("stateCode", e.target.value)}
+                  maxLength={2}
+                />
+              </Field>
+            </div>
+            <div className="sm:col-span-2">
+              <Field label="Invoice prefix">
+                <TextInput
+                  value={form.invoicePrefix}
+                  onChange={(e) => update("invoicePrefix", e.target.value)}
+                />
+              </Field>
+            </div>
+          </div>
+        </SectionCard>
 
-        {/* Right Column: Branding, Bank & Storage */}
+        {/* Right Column: Branding & Bank Account */}
         <div className="space-y-6">
           <SectionCard
             title="Branding"
@@ -244,52 +233,64 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
               </Field>
             </div>
           </SectionCard>
-
-          {isLocal ? (
-            <SectionCard
-              title="Database backup"
-              description="Download or restore the local SQLite database"
-            >
-              <div className="space-y-4">
-                <a
-                  href="/api/backup"
-                  download
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
-                >
-                  Download backup
-                </a>
-                <div className="space-y-3 border-t border-slate-100 pt-4">
-                  <input
-                    ref={restoreInputRef}
-                    type="file"
-                    name="backup"
-                    accept=".db,application/vnd.sqlite3,application/octet-stream"
-                    className="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
-                  />
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="danger"
-                      disabled={restorePending}
-                      onClick={onRestore}
-                    >
-                      {restorePending ? "Restoring..." : "Restore from backup"}
-                    </Button>
-                    <p className="max-w-xl text-xs leading-relaxed text-slate-500">
-                      Restore replaces current database after creating a safety copy.
-                    </p>
-                  </div>
-                  {restoreMessage ? (
-                    <p className="text-xs text-slate-600" role="status">
-                      {restoreMessage}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-            </SectionCard>
-          ) : null}
         </div>
       </div>
+
+      {/* Full-Width Section: Declaration & Terms */}
+      <SectionCard title="Declaration & Terms" description="Default declaration printed on invoice footer">
+        <Field label="Declaration text">
+          <TextArea
+            value={form.declaration}
+            onChange={(e) => update("declaration", e.target.value)}
+            rows={3}
+          />
+        </Field>
+      </SectionCard>
+
+      {/* Local-only: Database backup */}
+      {isLocal ? (
+        <SectionCard
+          title="Database backup"
+          description="Download or restore the local SQLite database"
+        >
+          <div className="space-y-4">
+            <a
+              href="/api/backup"
+              download
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+            >
+              Download backup
+            </a>
+            <div className="space-y-3 border-t border-slate-100 pt-4">
+              <input
+                ref={restoreInputRef}
+                type="file"
+                name="backup"
+                accept=".db,application/vnd.sqlite3,application/octet-stream"
+                className="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+              />
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  type="button"
+                  variant="danger"
+                  disabled={restorePending}
+                  onClick={onRestore}
+                >
+                  {restorePending ? "Restoring..." : "Restore from backup"}
+                </Button>
+                <p className="max-w-xl text-xs leading-relaxed text-slate-500">
+                  Restore replaces current database after creating a safety copy.
+                </p>
+              </div>
+              {restoreMessage ? (
+                <p className="text-xs text-slate-600" role="status">
+                  {restoreMessage}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </SectionCard>
+      ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
         <div>
