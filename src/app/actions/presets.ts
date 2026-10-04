@@ -104,6 +104,30 @@ export async function saveProductFormAction(formData: FormData) {
   }
 }
 
+export async function deleteCustomerPresetAction(id: number) {
+  try {
+    await deleteCustomerPreset(id);
+    revalidatePath("/customers");
+    revalidatePath("/invoices/new");
+    return { ok: true };
+  } catch (error) {
+    console.error("deleteCustomerPresetAction crashed:", error);
+    return { ok: false, error: "Failed to delete customer preset." };
+  }
+}
+
+export async function deleteProductPresetAction(id: number) {
+  try {
+    await deleteProductPreset(id);
+    revalidatePath("/products");
+    revalidatePath("/invoices/new");
+    return { ok: true };
+  } catch (error) {
+    console.error("deleteProductPresetAction crashed:", error);
+    return { ok: false, error: "Failed to delete product preset." };
+  }
+}
+
 export async function deleteCustomerFormAction(formData: FormData) {
   try {
     await deleteCustomerPreset(formNumber(formData, "id"));

@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteProductFormAction, saveProductPresetAction } from "@/app/actions/presets";
+import { deleteProductPresetAction, saveProductPresetAction } from "@/app/actions/presets";
 import { Button } from "@/components/ui/Button";
 import { Field, SelectInput, TextArea, TextInput } from "@/components/ui/Field";
 import { SectionCard } from "@/components/ui/SectionCard";
@@ -32,6 +32,7 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
   const [form, setForm] = useState(emptyProduct);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [isDeleting, startDeleting] = useTransition();
 
   function updateForm<K extends keyof typeof emptyProduct>(key: K, value: string | number) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -112,6 +113,25 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
     });
   }
 
+  function handleDelete() {
+    if (!selected) return;
+    if (!confirm("Are you sure you want to delete this preset? Saved invoices will not be affected.")) {
+      return;
+    }
+    setMessage("Deleting preset...");
+    startDeleting(async () => {
+      const result = await deleteProductPresetAction(selected.id);
+      if (result.ok) {
+        setSelected(null);
+        setForm(emptyProduct);
+        setMessage("Product preset deleted.");
+        router.refresh();
+      } else {
+        setMessage(result.error ?? "Could not delete product preset.");
+      }
+    });
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_minmax(340px,400px)] lg:gap-8 pb-16">
       {/* Products List Section */}
@@ -140,7 +160,7 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-slate-900 text-lg">Product Inventory</h3>
             <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-full tabular-nums">
-              {initialProducts.length} items
+              {initialProducts.length} {initialProducts.length === 1 ? "item" : "items"}
             </span>
           </div>
           <button
@@ -270,35 +290,35 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
                   </SelectInput>
                 </Field>
               </div>
+              </div>
+
+              {/* Card Footer Actions */}
+              <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                <Button type="submit" variant="primary" disabled={pending} className="w-full rounded-xl py-2.5 shadow-xs">
+                  {pending ? "Saving..." : selected ? "Update Product" : "Save Product"}
+                </Button>
+
+                {selected ? (
+                  <Button
+                    type="button"
+                    variant="danger"
+                    disabled={isDeleting}
+                    onClick={handleDelete}
+                    className="w-full rounded-xl py-2.5"
+                  >
+                    <IconTrash className="h-4 w-4" />
+                    {isDeleting ? "Deleting..." : "Delete Product"}
+                  </Button>
+                ) : null}
+
+                {message ? (
+                  <p className="text-center text-xs text-slate-600 font-medium mt-1" role="status">
+                    {message}
+                  </p>
+                ) : null}
+              </div>
             </div>
           </SectionCard>
-
-          {/* Action Row */}
-          <div className="flex flex-col gap-2">
-            <Button type="submit" variant="primary" disabled={pending} className="w-full rounded-xl py-3 shadow-sm">
-              {pending ? "Saving..." : selected ? "Update Product" : "Save Product"}
-            </Button>
-
-            {selected ? (
-              <form action={deleteProductFormAction} onSubmit={() => {
-                if (confirm("Are you sure you want to delete this preset? Saved invoices will not be affected.")) {
-                  setSelected(null);
-                }
-              }}>
-                <input type="hidden" name="id" value={selected.id} />
-                <Button type="submit" variant="danger" className="w-full rounded-xl py-3">
-                  <IconTrash className="h-4 w-4" />
-                  Delete Product
-                </Button>
-              </form>
-            ) : null}
-
-            {message ? (
-              <p className="text-center text-xs text-slate-600 font-medium mt-1" role="status">
-                {message}
-              </p>
-            ) : null}
-          </div>
         </form>
       </div>
 

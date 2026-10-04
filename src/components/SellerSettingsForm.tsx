@@ -171,10 +171,10 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
         <div className="space-y-6">
           <SectionCard
             title="Branding"
-            description="Logo appears on the invoice preview (browser storage only)"
+            description="Logo printed on invoice headers and preview"
           >
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-50">
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50">
                 {form.logoDataUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -183,7 +183,7 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
                     className="h-full w-full rounded-md object-contain p-1"
                   />
                 ) : (
-                  <IconImage className="h-8 w-8 text-zinc-400" />
+                  <IconImage className="h-8 w-8 text-slate-400" />
                 )}
               </div>
               <div className="flex flex-1 flex-col gap-2">
@@ -209,8 +209,8 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
                     </Button>
                   ) : null}
                 </div>
-                <p className="text-xs text-zinc-500">
-                  PNG or JPG recommended. Max 512 KB. Saved in the SQLite database with seller settings.
+                <p className="text-xs text-slate-500">
+                  PNG or JPG recommended. Max 512 KB. Saved securely with your seller settings.
                 </p>
               </div>
             </div>
@@ -254,17 +254,17 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
                 <a
                   href="/api/backup"
                   download
-                  className="inline-flex items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-3.5 py-2 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
                 >
                   Download backup
                 </a>
-                <div className="space-y-3 border-t border-zinc-100 pt-4">
+                <div className="space-y-3 border-t border-slate-100 pt-4">
                   <input
                     ref={restoreInputRef}
                     type="file"
                     name="backup"
                     accept=".db,application/vnd.sqlite3,application/octet-stream"
-                    className="block w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700"
+                    className="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
                   />
                   <div className="flex flex-wrap items-center gap-3">
                     <Button
@@ -275,12 +275,12 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
                     >
                       {restorePending ? "Restoring..." : "Restore from backup"}
                     </Button>
-                    <p className="max-w-xl text-xs leading-relaxed text-zinc-500">
+                    <p className="max-w-xl text-xs leading-relaxed text-slate-500">
                       Restore replaces current database after creating a safety copy.
                     </p>
                   </div>
                   {restoreMessage ? (
-                    <p className="text-xs text-zinc-600" role="status">
+                    <p className="text-xs text-slate-600" role="status">
                       {restoreMessage}
                     </p>
                   ) : null}
@@ -310,15 +310,21 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-5">
-        <Button type="submit" variant="primary" disabled={pending} className="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold shadow-sm">
-          {pending ? "Saving…" : "Save settings"}
-        </Button>
-        {message ? (
-          <p className="text-sm text-zinc-600 font-semibold" role="status">
-            {message}
-          </p>
-        ) : null}
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
+        <div>
+          <h4 className="text-sm font-bold text-slate-900">Save Configuration</h4>
+          <p className="text-xs text-slate-500 font-medium">Apply all company, bank, and branding changes to issued invoices</p>
+        </div>
+        <div className="flex items-center gap-3">
+          {message ? (
+            <p className="text-xs font-semibold text-slate-700" role="status">
+              {message}
+            </p>
+          ) : null}
+          <Button type="submit" variant="primary" disabled={pending} className="px-6 py-2.5 rounded-xl font-bold shadow-xs">
+            {pending ? "Saving…" : "Save settings"}
+          </Button>
+        </div>
       </div>
     </form>
   );

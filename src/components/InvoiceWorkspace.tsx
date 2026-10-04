@@ -149,12 +149,12 @@ export function InvoiceWorkspace({
   return (
     <div className="space-y-4">
       {/* Mobile Tab Switcher */}
-      <div className="no-print xl:hidden flex rounded-lg bg-zinc-200/60 p-1 shadow-sm border border-zinc-200">
+      <div className="no-print xl:hidden flex rounded-xl bg-slate-200/60 p-1 shadow-xs border border-slate-200">
         <button
           type="button"
-          className={`flex-1 flex items-center justify-center gap-1.5 rounded-md py-2.5 text-center text-sm font-semibold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-center text-sm font-semibold transition-all ${
             activeTab === "edit"
-              ? "bg-white text-slate-900 shadow-sm"
+              ? "bg-white text-slate-900 shadow-xs"
               : "text-slate-500 hover:text-slate-900"
           }`}
           onClick={() => setActiveTab("edit")}
@@ -163,9 +163,9 @@ export function InvoiceWorkspace({
         </button>
         <button
           type="button"
-          className={`flex-1 flex items-center justify-center gap-1.5 rounded-md py-2.5 text-center text-sm font-semibold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-center text-sm font-semibold transition-all ${
             activeTab === "preview"
-              ? "bg-white text-slate-900 shadow-sm"
+              ? "bg-white text-slate-900 shadow-xs"
               : "text-slate-500 hover:text-slate-900"
           }`}
           onClick={() => setActiveTab("preview")}
@@ -176,7 +176,7 @@ export function InvoiceWorkspace({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.92fr)_minmax(520px,1.08fr)] xl:gap-8 2xl:grid-cols-[minmax(0,0.9fr)_minmax(620px,1.1fr)]">
         <div className={`no-print min-w-0 space-y-4 ${activeTab === "edit" ? "block" : "hidden xl:block"}`}>
-          <div className="no-print sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-2 border-b border-zinc-200 bg-zinc-100/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 xl:static xl:mx-0 xl:bg-transparent xl:px-0 xl:pb-4 xl:pt-0 xl:backdrop-blur-none">
+          <div className="no-print sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 xl:static xl:mx-0 xl:bg-transparent xl:px-0 xl:pb-4 xl:pt-0 xl:backdrop-blur-none">
             <Button variant="primary" onClick={onSaveInvoice} disabled={isSaving}>
               <IconDocument />
               {isSaving
@@ -304,23 +304,23 @@ export function InvoiceWorkspace({
         <div className={`min-w-0 xl:sticky xl:top-20 xl:self-start ${activeTab === "preview" ? "block" : "hidden xl:block"}`}>
           <div className="no-print mb-3 flex flex-wrap items-end justify-between gap-2">
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">Invoice preview</h2>
-              <p className="text-xs text-zinc-500">A4 print surface, updates live</p>
+              <h2 className="text-sm font-semibold text-slate-900">Invoice preview</h2>
+              <p className="text-xs text-slate-500">A4 print surface, updates live</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="rounded border border-zinc-200 bg-white px-2 py-1 text-xs font-medium tabular-nums text-zinc-700">
+              <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold tabular-nums text-slate-700 shadow-2xs">
                 {formatMoney(totals.grandTotal)}
               </span>
-              <div className="flex rounded-md border border-zinc-200 bg-white p-0.5">
+              <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-2xs">
                 {(["fit", "actual"] as const).map((option) => (
                   <button
                     key={option}
                     type="button"
                     onClick={() => setPreviewMode(option)}
-                    className={`rounded px-2 py-1 text-xs font-semibold transition-colors ${
+                    className={`rounded-md px-2 py-1 text-xs font-semibold transition-colors ${
                       previewMode === option
-                        ? "bg-zinc-900 text-white"
-                        : "text-zinc-600"
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     {option === "fit" ? "Fit" : "100%"}

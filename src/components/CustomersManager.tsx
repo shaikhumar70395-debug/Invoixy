@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteCustomerFormAction, saveCustomerPresetAction } from "@/app/actions/presets";
+import { deleteCustomerPresetAction, saveCustomerPresetAction } from "@/app/actions/presets";
 import { Button } from "@/components/ui/Button";
 import { Field, TextArea, TextInput } from "@/components/ui/Field";
 import { SectionCard } from "@/components/ui/SectionCard";
@@ -32,6 +32,7 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
   const [form, setForm] = useState(emptyCustomer);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [isDeleting, startDeleting] = useTransition();
 
   function updateForm<K extends keyof typeof emptyCustomer>(key: K, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -111,6 +112,25 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
     });
   }
 
+  function handleDelete() {
+    if (!selected) return;
+    if (!confirm("Are you sure you want to delete this preset? Saved invoices will not be affected.")) {
+      return;
+    }
+    setMessage("Deleting preset...");
+    startDeleting(async () => {
+      const result = await deleteCustomerPresetAction(selected.id);
+      if (result.ok) {
+        setSelected(null);
+        setForm(emptyCustomer);
+        setMessage("Customer preset deleted.");
+        router.refresh();
+      } else {
+        setMessage(result.error ?? "Could not delete customer preset.");
+      }
+    });
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_minmax(340px,400px)] lg:gap-8 pb-16">
       {/* Customers List Section */}
@@ -139,7 +159,7 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-slate-900 text-lg">Customer Directory</h3>
             <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-full tabular-nums">
-              {initialCustomers.length} records
+              {initialCustomers.length} {initialCustomers.length === 1 ? "record" : "records"}
             </span>
           </div>
           <button
@@ -274,63 +294,62 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
                   />
                 </Field>
               </div>
+
+              {/* Card Footer Actions */}
+              <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                <Button type="submit" variant="primary" disabled={pending} className="w-full rounded-xl py-2.5 shadow-xs">
+                  {pending ? "Saving..." : selected ? "Update Customer" : "Save Customer"}
+                </Button>
+
+                {selected ? (
+                  <Button
+                    type="button"
+                    variant="danger"
+                    disabled={isDeleting}
+                    onClick={handleDelete}
+                    className="w-full rounded-xl py-2.5"
+                  >
+                    <IconTrash className="h-4 w-4" />
+                    {isDeleting ? "Deleting..." : "Delete Customer"}
+                  </Button>
+                ) : null}
+
+                {selected ? (
+                  <div className="pt-3 border-t border-slate-100 space-y-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                      Customer Ledger & History
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <a
+                        href={`/api/export?buyer=${encodeURIComponent(selected.name)}`}
+                        download={`invoices_${selected.name.replace(/[^a-zA-Z0-9_-]/g, "_")}.csv`}
+                        className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-[#4318ff] hover:border-slate-300 transition-colors shadow-2xs"
+                        title={`Download statement for ${selected.name}`}
+                      >
+                        <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Export CSV
+                      </a>
+                      <Link
+                        href={`/invoices?buyer=${encodeURIComponent(selected.name)}`}
+                        className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                      >
+                        <span>Invoices</span>
+                        <span className="text-[10px]">↗</span>
+                      </Link>
+                    </div>
+                  </div>
+                ) : null}
+
+                {message ? (
+                  <p className="text-center text-xs text-slate-600 font-medium mt-1" role="status">
+                    {message}
+                  </p>
+                ) : null}
+              </div>
             </div>
           </SectionCard>
-
-          {/* Action Row */}
-          <div className="flex flex-col gap-2">
-            <Button type="submit" variant="primary" disabled={pending} className="w-full rounded-xl py-3 shadow-sm">
-              {pending ? "Saving..." : selected ? "Update Customer" : "Save Customer"}
-            </Button>
-
-            {selected ? (
-              <form action={deleteCustomerFormAction} onSubmit={() => {
-                if (confirm("Are you sure you want to delete this preset? Saved invoices will not be affected.")) {
-                  setSelected(null);
-                }
-              }}>
-                <input type="hidden" name="id" value={selected.id} />
-                <Button type="submit" variant="danger" className="w-full rounded-xl py-3">
-                  <IconTrash className="h-4 w-4" />
-                  Delete Customer
-                </Button>
-              </form>
-            ) : null}
-
-            {selected ? (
-              <div className="pt-3 border-t border-slate-200/80 space-y-2">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  Customer Ledger & History
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <a
-                    href={`/api/export?buyer=${encodeURIComponent(selected.name)}`}
-                    download={`invoices_${selected.name.replace(/[^a-zA-Z0-9_-]/g, "_")}.csv`}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-[#4318ff] hover:border-slate-300 transition-colors shadow-2xs"
-                    title={`Download statement for ${selected.name}`}
-                  >
-                    <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Export CSV
-                  </a>
-                  <Link
-                    href={`/invoices?buyer=${encodeURIComponent(selected.name)}`}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
-                  >
-                    <span>Invoices</span>
-                    <span className="text-[10px]">↗</span>
-                  </Link>
-                </div>
-              </div>
-            ) : null}
-
-            {message ? (
-              <p className="text-center text-xs text-slate-600 font-medium mt-1" role="status">
-                {message}
-              </p>
-            ) : null}
-          </div>
         </form>
       </div>
 
