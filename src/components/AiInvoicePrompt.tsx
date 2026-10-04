@@ -11,15 +11,18 @@ type Props = {
 
 const SAMPLE_PROMPTS = [
   {
-    label: "📱 Smartphones & Audio",
+    title: "Smartphones",
+    hint: "iPhone + Charger",
     text: "Bill Amit Patel for 2 Apple iPhone 15 Pro at ₹1,19,900 each and 1 MagSafe Charger at ₹4,500 with 18% GST",
   },
   {
-    label: "💻 Laptops & IT Hardware",
+    title: "Laptops & IT",
+    hint: "ThinkPad + Mice",
     text: "Create invoice for Priya Enterprises for 5 Lenovo ThinkPad Laptops at ₹55,000 each and 5 Wireless Mice at ₹850 with 18% GST",
   },
   {
-    label: "📺 Smart TVs & Audio",
+    title: "Smart TVs",
+    hint: "OLED TV + Audio",
     text: "Invoice Rajesh Kumar for 1 Samsung 65-inch 4K OLED TV at ₹1,45,000 and 1 Sony Soundbar at ₹18,500 with 28% GST",
   },
 ];
@@ -31,7 +34,7 @@ export function AiInvoicePrompt({ onApply }: Props) {
 
   const handleGenerate = () => {
     if (!prompt.trim()) {
-      toast.error("Please enter invoice details or pick a quick template.");
+      toast.error("Please enter invoice details or pick a suggested template.");
       return;
     }
 
@@ -96,20 +99,26 @@ export function AiInvoicePrompt({ onApply }: Props) {
 
       {isOpen && (
         <div className="mt-3.5 space-y-3 pt-3 border-t border-slate-100">
-          {/* Quick Click Samples */}
+          {/* Quick Balanced 3-Column Template Grid */}
           <div>
-            <p className="text-[11px] font-semibold text-slate-500 mb-1.5">
-              Quick templates:
-            </p>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-slate-700">Suggested orders</span>
+              <span className="text-[10px] text-slate-400">Tap to load</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
               {SAMPLE_PROMPTS.map((sample, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setPrompt(sample.text)}
-                  className="rounded-lg border border-slate-200 bg-slate-50/70 px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-[#4318ff] hover:bg-white hover:text-[#4318ff] transition-all shadow-2xs text-left"
+                  className="group flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50/70 p-2 sm:p-2.5 text-center transition-all hover:border-[#4318ff] hover:bg-white active:scale-[0.98] shadow-2xs"
                 >
-                  {sample.label}
+                  <span className="text-xs font-semibold text-slate-800 group-hover:text-[#4318ff] truncate w-full transition-colors">
+                    {sample.title}
+                  </span>
+                  <span className="text-[10px] text-slate-400 group-hover:text-slate-600 truncate w-full mt-0.5 transition-colors">
+                    {sample.hint}
+                  </span>
                 </button>
               ))}
             </div>
@@ -118,7 +127,7 @@ export function AiInvoicePrompt({ onApply }: Props) {
           {/* Text Area */}
           <div className="relative">
             <textarea
-              rows={2}
+              rows={3}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder='e.g. "Invoice Rajesh Kumar for 1 Samsung 65-inch 4K OLED TV at ₹1,45,000 and 1 Soundbar at ₹18,500 with 18% GST"'
@@ -127,12 +136,12 @@ export function AiInvoicePrompt({ onApply }: Props) {
           </div>
 
           {/* Responsive Action Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-            <span className="text-[11px] text-slate-500 font-medium">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 pt-0.5">
+            <span className="text-[11px] text-slate-500 font-medium leading-tight">
               Auto-detects customer, line items, quantities, rates and GST.
             </span>
 
-            <div className="flex items-center gap-2 justify-end">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               {prompt && (
                 <button
                   type="button"
@@ -146,11 +155,11 @@ export function AiInvoicePrompt({ onApply }: Props) {
                 type="button"
                 onClick={handleGenerate}
                 disabled={isPending || !prompt.trim()}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#4318ff] hover:bg-[#3713d3] px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-xs active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 transition-all whitespace-nowrap shrink-0"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-[#4318ff] hover:bg-[#3713d3] px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 transition-all whitespace-nowrap"
               >
                 {isPending ? (
                   <>
-                    <svg className="h-3.5 w-3.5 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+                    <svg className="h-4 w-4 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z" />
                     </svg>
@@ -159,16 +168,16 @@ export function AiInvoicePrompt({ onApply }: Props) {
                 ) : (
                   <>
                     <svg
-                      className="h-3.5 w-3.5 shrink-0"
+                      className="h-4 w-4 shrink-0"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="2"
+                      strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       aria-hidden
                     >
-                      <path d="M5 13l4 4L19 7" />
+                      <polyline points="20 6 9 17 4 12" />
                     </svg>
                     <span>Fill Invoice Draft</span>
                   </>
