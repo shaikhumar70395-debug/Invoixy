@@ -11,115 +11,223 @@ const cloudClient = (tursoUrl && tursoUrl.startsWith("libsql://") && tursoToken)
   ? createClient({ url: tursoUrl, authToken: tursoToken })
   : null;
 
+const electronicSellerProfile = {
+  companyName: "Apex Electronics & Appliances",
+  address: "Shop No. 12-14, Ground Floor, Phoenix Galleria Mall, LBS Marg, Kurla West, Mumbai, Maharashtra 400070",
+  pan: "AAEPA4829G",
+  gstin: "27AAEPA4829G1Z4",
+  stateName: "MAHARASHTRA",
+  stateCode: "27",
+  phone: "+91 98204 77319",
+  bankName: "HDFC BANK",
+  bankAccountNo: "50200084920194",
+  bankIfsc: "HDFC0000128",
+  bankBranch: "Kurla West Branch, Mumbai",
+  invoicePrefix: "APEX",
+  declaration:
+    "We declare that this invoice shows the actual price of the electronic goods described and that all particulars are true and correct. Goods once sold are covered under respective manufacturer warranty.",
+};
+
 const sampleCustomers = [
   {
-    name: "Tata Consultancy Services Ltd",
-    address: "TCS House, Raveline Street, Fort, Mumbai, Maharashtra 400001",
+    name: "Rahul Sharma",
+    address: "Flat 402, Building 3, Greenfield Heights, Andheri West, Mumbai, Maharashtra 400053",
     stateName: "MAHARASHTRA",
     stateCode: "27",
-    gstin: "27AAACT2727Q1ZW",
+    gstin: "27AAEPS8912P1ZV",
   },
   {
-    name: "Infosys Technologies Pvt Ltd",
-    address: "Plot No. 44, Electronic City, Hosur Road, Bengaluru, Karnataka 560100",
-    stateName: "KARNATAKA",
-    stateCode: "29",
-    gstin: "29AABCI1234K1Z5",
-  },
-  {
-    name: "Reliance Retail Ventures",
-    address: "3rd Floor, Court House, Lokmanya Tilak Marg, Dhobi Talao, Mumbai, Maharashtra 400002",
+    name: "Pooja Verma",
+    address: "B-304, Palm Grove Apartments, Lokhandwala Complex, Kandivali East, Mumbai, Maharashtra 400101",
     stateName: "MAHARASHTRA",
     stateCode: "27",
-    gstin: "27AABCR4567M1ZX",
+    gstin: "27BAPV6723M1Z8",
   },
   {
-    name: "Wipro Enterprises",
-    address: "Doddakannelli, Sarjapur Road, Bengaluru, Karnataka 560035",
-    stateName: "KARNATAKA",
-    stateCode: "29",
-    gstin: "29AAACW8765L1ZG",
+    name: "Amit R. Deshmukh",
+    address: "14/2, Shanti Niwas, FC Road, Shivaji Nagar, Pune, Maharashtra 411005",
+    stateName: "MAHARASHTRA",
+    stateCode: "27",
+    gstin: "27AAPPD3145K1ZK",
   },
   {
-    name: "HCL Global Solutions",
-    address: "Technology Hub, Sector 126, Noida, Uttar Pradesh 201304",
-    stateName: "UTTAR PRADESH",
-    stateCode: "09",
-    gstin: "09AAACH5432J1ZP",
+    name: "Mohammed Arif Khan",
+    address: "Flat 12, Gulshan Heritage, Hill Road, Bandra West, Mumbai, Maharashtra 400050",
+    stateName: "MAHARASHTRA",
+    stateCode: "27",
+    gstin: "27BAAPK9041L1Z9",
   },
   {
-    name: "Zomato Media Pvt Ltd",
-    address: "Ground Floor, 12A, 94 Meghdoot, Nehru Place, New Delhi, Delhi 110019",
-    stateName: "DELHI",
-    stateCode: "07",
-    gstin: "07AAACZ9876K1ZY",
+    name: "Sneha Kulkarni",
+    address: "Plot 22, Vasant Vihar Society, Paud Road, Kothrud, Pune, Maharashtra 411038",
+    stateName: "MAHARASHTRA",
+    stateCode: "27",
+    gstin: "27AALPK4820R1Z2",
+  },
+  {
+    name: "Vikramaditya Rathore",
+    address: "Flat 701, Tower B, Oberoi Woods, Mohan Gokhale Road, Goregaon East, Mumbai, Maharashtra 400063",
+    stateName: "MAHARASHTRA",
+    stateCode: "27",
+    gstin: "27ACZPR1948H1ZF",
   },
 ];
 
 const sampleProducts = [
   {
-    description: "Enterprise Cloud ERP Software License (Annual)",
-    hsnSac: "997331",
+    description: "Apple iPhone 15 (128GB, Black)",
+    hsnSac: "85171300",
     unit: "Nos",
-    defaultRate: 48000,
+    defaultRate: 69999,
     defaultGstRatePercent: 18,
   },
   {
-    description: "Full-Stack Web & Mobile App Development",
-    hsnSac: "998314",
-    unit: "Hours",
-    defaultRate: 2500,
-    defaultGstRatePercent: 18,
-  },
-  {
-    description: "Network Security & IT Infrastructure Audit",
-    hsnSac: "998313",
+    description: "Samsung 55\" Crystal 4K UHD Smart TV (55CUE60AK)",
+    hsnSac: "85287200",
     unit: "Nos",
-    defaultRate: 35000,
+    defaultRate: 43990,
     defaultGstRatePercent: 18,
   },
   {
-    description: "Industrial Ergonomic Office Desk Chairs",
-    hsnSac: "940310",
-    unit: "Pcs",
-    defaultRate: 8500,
+    description: "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
+    hsnSac: "85183000",
+    unit: "Nos",
+    defaultRate: 26990,
     defaultGstRatePercent: 18,
   },
   {
-    description: "Premium A4 Bond Copier Paper (500 Sheets/Ream)",
-    hsnSac: "480256",
-    unit: "Pcs",
-    defaultRate: 320,
-    defaultGstRatePercent: 12,
+    description: "Apple MacBook Air M2 (13.6-inch, 16GB RAM, 256GB SSD)",
+    hsnSac: "84713010",
+    unit: "Nos",
+    defaultRate: 94900,
+    defaultGstRatePercent: 18,
   },
   {
-    description: "Data Analytics & Business Intelligence Consulting",
-    hsnSac: "998311",
-    unit: "Days",
-    defaultRate: 15000,
+    description: "Logitech MX Master 3S Wireless Performance Mouse",
+    hsnSac: "84716060",
+    unit: "Nos",
+    defaultRate: 8995,
+    defaultGstRatePercent: 18,
+  },
+  {
+    description: "Boat Airdopes 141 Bluetooth True Wireless Earbuds",
+    hsnSac: "85183000",
+    unit: "Nos",
+    defaultRate: 1299,
     defaultGstRatePercent: 18,
   },
 ];
 
 async function seedDatabase(client, label) {
-  console.log(`\n--- Seeding ${label} ---`);
-  
-  // Find all shops
+  console.log(`\n========================================`);
+  console.log(`Seeding and Updating: ${label}`);
+  console.log(`========================================`);
+
+  // 1. Fetch shops
   const shopRes = await client.execute("SELECT id, name FROM Shop;");
   if (shopRes.rows.length === 0) {
-    console.log(`No shops found in ${label}.`);
-    return;
+    console.log(`No shops found in ${label}. Updating default SellerSettings table...`);
   }
 
-  // Delete all existing customers and products
-  console.log(`Deleting existing customer and product presets in ${label}...`);
+  // 2. Update Shop Names & Seller Settings
+  for (const shop of shopRes.rows) {
+    console.log(`Setting business details for shop "${shop.name}" (${shop.id})...`);
+    await client.execute({
+      sql: "UPDATE Shop SET name = ?, updatedAt = datetime('now') WHERE id = ?;",
+      args: [electronicSellerProfile.companyName, shop.id],
+    });
+
+    const existingSeller = await client.execute({
+      sql: "SELECT id FROM SellerSettings WHERE shopId = ? LIMIT 1;",
+      args: [shop.id],
+    });
+
+    if (existingSeller.rows.length > 0) {
+      await client.execute({
+        sql: `UPDATE SellerSettings SET 
+          companyName = ?, address = ?, pan = ?, gstin = ?, stateName = ?, stateCode = ?, 
+          phone = ?, bankName = ?, bankAccountNo = ?, bankIfsc = ?, bankBranch = ?, 
+          declaration = ?, invoicePrefix = ?, updatedAt = datetime('now')
+          WHERE shopId = ?;`,
+        args: [
+          electronicSellerProfile.companyName,
+          electronicSellerProfile.address,
+          electronicSellerProfile.pan,
+          electronicSellerProfile.gstin,
+          electronicSellerProfile.stateName,
+          electronicSellerProfile.stateCode,
+          electronicSellerProfile.phone,
+          electronicSellerProfile.bankName,
+          electronicSellerProfile.bankAccountNo,
+          electronicSellerProfile.bankIfsc,
+          electronicSellerProfile.bankBranch,
+          electronicSellerProfile.declaration,
+          electronicSellerProfile.invoicePrefix,
+          shop.id,
+        ],
+      });
+      console.log(`✅ Updated existing SellerSettings for shop ${shop.id}.`);
+    } else {
+      await client.execute({
+        sql: `INSERT INTO SellerSettings (
+          companyName, address, pan, gstin, stateName, stateCode, phone,
+          bankName, bankAccountNo, bankIfsc, bankBranch, declaration, invoicePrefix,
+          logoDataUrl, shopId, createdAt, updatedAt
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, datetime('now'), datetime('now'));`,
+        args: [
+          electronicSellerProfile.companyName,
+          electronicSellerProfile.address,
+          electronicSellerProfile.pan,
+          electronicSellerProfile.gstin,
+          electronicSellerProfile.stateName,
+          electronicSellerProfile.stateCode,
+          electronicSellerProfile.phone,
+          electronicSellerProfile.bankName,
+          electronicSellerProfile.bankAccountNo,
+          electronicSellerProfile.bankIfsc,
+          electronicSellerProfile.bankBranch,
+          electronicSellerProfile.declaration,
+          electronicSellerProfile.invoicePrefix,
+          shop.id,
+        ],
+      });
+      console.log(`✅ Created SellerSettings for shop ${shop.id}.`);
+    }
+  }
+
+  // Also update singleton SellerSettings (id = 1) if present
+  await client.execute({
+    sql: `UPDATE SellerSettings SET 
+      companyName = ?, address = ?, pan = ?, gstin = ?, stateName = ?, stateCode = ?, 
+      phone = ?, bankName = ?, bankAccountNo = ?, bankIfsc = ?, bankBranch = ?, 
+      declaration = ?, invoicePrefix = ?, updatedAt = datetime('now')
+      WHERE id = 1;`,
+    args: [
+      electronicSellerProfile.companyName,
+      electronicSellerProfile.address,
+      electronicSellerProfile.pan,
+      electronicSellerProfile.gstin,
+      electronicSellerProfile.stateName,
+      electronicSellerProfile.stateCode,
+      electronicSellerProfile.phone,
+      electronicSellerProfile.bankName,
+      electronicSellerProfile.bankAccountNo,
+      electronicSellerProfile.bankIfsc,
+      electronicSellerProfile.bankBranch,
+      electronicSellerProfile.declaration,
+      electronicSellerProfile.invoicePrefix,
+    ],
+  });
+
+  // 3. Delete all existing customers and products
+  console.log(`Deleting previous customer and product presets in ${label}...`);
   await client.execute("DELETE FROM Customer;");
   await client.execute("DELETE FROM Product;");
 
-  // Insert presets for each shop
+  // 4. Insert new presets for each shop
   for (const shop of shopRes.rows) {
-    console.log(`Populating 6 customer & 6 product presets for shop: "${shop.name}" (${shop.id})...`);
-    
+    console.log(`Populating 6 local customer & 6 electronic product presets for shop: "${electronicSellerProfile.companyName}" (${shop.id})...`);
+
     for (const cust of sampleCustomers) {
       await client.execute({
         sql: `INSERT INTO Customer (name, address, gstin, stateName, stateCode, shopId, createdAt, updatedAt)
@@ -148,9 +256,9 @@ async function run() {
     if (cloudClient) {
       await seedDatabase(cloudClient, "Turso Cloud DB");
     } else {
-      console.log("Turso Cloud credentials not configured.");
+      console.log("Turso Cloud credentials not configured in env.");
     }
-    console.log("\n🎉 ALL PRESETS UPDATED SUCCESSFULLY!");
+    console.log("\n🎉 ALL SELLER SETTINGS, CUSTOMERS & PRODUCTS UPDATED TO ELECTRONIC BUSINESS!");
   } catch (err) {
     console.error("Seeding error:", err);
   }
