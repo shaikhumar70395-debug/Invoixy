@@ -63,12 +63,22 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
       stateCode: customer.stateCode,
     });
     setMessage(null);
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById("customer-form-section")?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
   }
 
   function handleAddNew() {
     setSelected(null);
     setForm(emptyCustomer);
     setMessage(null);
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById("customer-form-section")?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
   }
 
   function handleSave(e: React.FormEvent) {
@@ -126,10 +136,19 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
         )}
 
         <div className="flex items-center justify-between mb-2 px-1">
-          <h3 className="font-bold text-slate-900 text-lg">Customer Directory</h3>
-          <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-full tabular-nums">
-            {initialCustomers.length} records
-          </span>
+          <div className="flex items-center gap-2">
+            <h3 className="font-bold text-slate-900 text-lg">Customer Directory</h3>
+            <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-full tabular-nums">
+              {initialCustomers.length} records
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddNew}
+            className="lg:hidden inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 transition-colors"
+          >
+            + Add
+          </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -206,7 +225,7 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
       </div>
 
       {/* Side Form Card */}
-      <div className="lg:sticky lg:top-20 lg:self-start min-w-0">
+      <div id="customer-form-section" className="lg:sticky lg:top-20 lg:self-start min-w-0">
         <form onSubmit={handleSave} className="space-y-4">
           <SectionCard
             title={selected ? "Edit Customer" : "Add Customer"}

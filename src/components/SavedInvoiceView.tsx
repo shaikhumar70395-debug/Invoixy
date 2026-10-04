@@ -153,25 +153,25 @@ export function SavedInvoiceView({ id, seller, draft, totals, initialPayment }: 
           <a
             href={`/api/invoices/${id}/pdf`}
             download
-            className="col-span-2 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-900 bg-slate-900 px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition-all duration-150 hover:bg-slate-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-600 focus-visible:ring-offset-2 sm:col-span-1"
+            className="col-span-1 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-900 bg-slate-900 px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition-all duration-150 hover:bg-slate-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-600 focus-visible:ring-offset-2"
           >
             <IconDocument />
             Download PDF
           </a>
-          <Button type="button" variant="secondary" onClick={onPrint}>
+          <Button type="button" variant="secondary" onClick={onPrint} className="col-span-1">
             <IconPrinter />
             Print / PDF
           </Button>
           <Link
             href={`/invoices/${id}/edit`}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+            className="col-span-1 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
           >
             <IconDocument />
             Edit
           </Link>
           <Link
             href={`/invoices/new?duplicate=${id}`}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+            className="col-span-1 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
           >
             <IconDocument />
             Duplicate

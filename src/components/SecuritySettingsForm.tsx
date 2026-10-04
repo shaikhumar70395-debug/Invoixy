@@ -44,7 +44,7 @@ export function SecuritySettingsForm({ currentAuthType }: { currentAuthType: str
           <label className="text-sm font-semibold text-zinc-900">
             Authentication Method
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label
               className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
                 authType === "PIN"

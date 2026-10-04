@@ -155,10 +155,10 @@ export function InvoiceFilterForm({ states }: Props) {
         {/* Expandable Advanced Grid */}
         <div
           className={`grid gap-4 overflow-hidden transition-all duration-300 ${
-            isOpen ? "mt-4 pt-4 border-t border-zinc-100 opacity-100 max-h-[500px]" : "max-h-0 opacity-0 pointer-events-none"
+            isOpen ? "mt-4 pt-4 border-t border-zinc-100 opacity-100 max-h-[800px]" : "max-h-0 opacity-0 pointer-events-none"
           }`}
         >
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {/* Start Date */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">

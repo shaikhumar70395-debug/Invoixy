@@ -171,20 +171,22 @@ export function InvoiceForm({
               }
             />
           </Field>
-          <Field label="Date">
-            <TextInput
-              type="date"
-              value={draft.meta.invoiceDate}
-              onChange={(e) => patchMeta({ invoiceDate: e.target.value })}
-            />
-          </Field>
-          <Field label="Due date">
-            <TextInput
-              type="date"
-              value={draft.meta.dueDate}
-              onChange={(e) => patchMeta({ dueDate: e.target.value })}
-            />
-          </Field>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:col-span-2">
+            <Field label="Date">
+              <TextInput
+                type="date"
+                value={draft.meta.invoiceDate}
+                onChange={(e) => patchMeta({ invoiceDate: e.target.value })}
+              />
+            </Field>
+            <Field label="Due date">
+              <TextInput
+                type="date"
+                value={draft.meta.dueDate}
+                onChange={(e) => patchMeta({ dueDate: e.target.value })}
+              />
+            </Field>
+          </div>
           <Field label="Mode / terms of payment">
             <TextInput
               value={draft.meta.modeOfPayment}
@@ -269,19 +271,21 @@ export function InvoiceForm({
               />
             </Field>
           </div>
-          <Field label="State name">
-            <TextInput
-              value={draft.buyer.stateName}
-              onChange={(e) => patchBuyer({ stateName: e.target.value })}
-            />
-          </Field>
-          <Field label="State code">
-            <TextInput
-              value={draft.buyer.stateCode}
-              onChange={(e) => patchBuyer({ stateCode: e.target.value })}
-              maxLength={2}
-            />
-          </Field>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:col-span-2">
+            <Field label="State name">
+              <TextInput
+                value={draft.buyer.stateName}
+                onChange={(e) => patchBuyer({ stateName: e.target.value })}
+              />
+            </Field>
+            <Field label="State code">
+              <TextInput
+                value={draft.buyer.stateCode}
+                onChange={(e) => patchBuyer({ stateCode: e.target.value })}
+                maxLength={2}
+              />
+            </Field>
+          </div>
           <div className="sm:col-span-2">
             <Field label="Delivery address (optional)">
               <TextArea
@@ -324,21 +328,23 @@ export function InvoiceForm({
                   </Button>
                 ) : null}
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Saved product">
-                  <SelectInput
-                    defaultValue=""
-                    onChange={(e) => applyProduct(line.id, e.target.value)}
-                  >
-                    <option value="">Select product</option>
-                    {products.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.description}
-                      </option>
-                    ))}
-                  </SelectInput>
-                </Field>
-                <div className="flex items-end">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="col-span-2 sm:col-span-1">
+                  <Field label="Saved product">
+                    <SelectInput
+                      defaultValue=""
+                      onChange={(e) => applyProduct(line.id, e.target.value)}
+                    >
+                      <option value="">Select product</option>
+                      {products.map((product) => (
+                        <option key={product.id} value={product.id}>
+                          {product.description}
+                        </option>
+                      ))}
+                    </SelectInput>
+                  </Field>
+                </div>
+                <div className="col-span-2 sm:col-span-1 flex items-end">
                   <Button
                     type="button"
                     variant="secondary"
@@ -349,7 +355,7 @@ export function InvoiceForm({
                     Save as product
                   </Button>
                 </div>
-                <div className="sm:col-span-2">
+                <div className="col-span-2">
                   <Field label="Description">
                     <TextArea
                       value={line.description}
@@ -359,78 +365,90 @@ export function InvoiceForm({
                     />
                   </Field>
                 </div>
-                <Field label="HSN / SAC">
-                  <TextInput
-                    value={line.hsnSac}
-                    onChange={(e) =>
-                      updateLine(line.id, { hsnSac: e.target.value })
-                    }
-                  />
-                </Field>
-                <Field label="Unit">
-                  <TextInput
-                    value={line.unit}
-                    onChange={(e) =>
-                      updateLine(line.id, { unit: e.target.value })
-                    }
-                  />
-                </Field>
-                <Field label="Quantity">
-                  <TextInput
-                    type="number"
-                    min={0}
-                    step="any"
-                    value={line.quantity || ""}
-                    onChange={(e) =>
-                      updateLine(line.id, {
-                        quantity: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </Field>
-                <Field label="Rate">
-                  <TextInput
-                    type="number"
-                    min={0}
-                    step="any"
-                    value={line.rate || ""}
-                    onChange={(e) =>
-                      updateLine(line.id, {
-                        rate: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </Field>
-                <Field label="Discount %">
-                  <TextInput
-                    type="number"
-                    min={0}
-                    max={100}
-                    step="any"
-                    value={line.discountPercent || ""}
-                    onChange={(e) =>
-                      updateLine(line.id, {
-                        discountPercent: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </Field>
-                <Field label="GST rate (%)">
-                  <SelectInput
-                    value={line.gstRatePercent}
-                    onChange={(e) =>
-                      updateLine(line.id, {
-                        gstRatePercent: parseFloat(e.target.value),
-                      })
-                    }
-                  >
-                    {GST_RATES.map((rate) => (
-                      <option key={rate} value={rate}>
-                        {rate}%
-                      </option>
-                    ))}
-                  </SelectInput>
-                </Field>
+                <div className="col-span-1">
+                  <Field label="HSN / SAC">
+                    <TextInput
+                      value={line.hsnSac}
+                      onChange={(e) =>
+                        updateLine(line.id, { hsnSac: e.target.value })
+                      }
+                    />
+                  </Field>
+                </div>
+                <div className="col-span-1">
+                  <Field label="Unit">
+                    <TextInput
+                      value={line.unit}
+                      onChange={(e) =>
+                        updateLine(line.id, { unit: e.target.value })
+                      }
+                    />
+                  </Field>
+                </div>
+                <div className="col-span-1">
+                  <Field label="Quantity">
+                    <TextInput
+                      type="number"
+                      min={0}
+                      step="any"
+                      value={line.quantity || ""}
+                      onChange={(e) =>
+                        updateLine(line.id, {
+                          quantity: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </Field>
+                </div>
+                <div className="col-span-1">
+                  <Field label="Rate">
+                    <TextInput
+                      type="number"
+                      min={0}
+                      step="any"
+                      value={line.rate || ""}
+                      onChange={(e) =>
+                        updateLine(line.id, {
+                          rate: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </Field>
+                </div>
+                <div className="col-span-1">
+                  <Field label="Discount %">
+                    <TextInput
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="any"
+                      value={line.discountPercent || ""}
+                      onChange={(e) =>
+                        updateLine(line.id, {
+                          discountPercent: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </Field>
+                </div>
+                <div className="col-span-1">
+                  <Field label="GST rate (%)">
+                    <SelectInput
+                      value={line.gstRatePercent}
+                      onChange={(e) =>
+                        updateLine(line.id, {
+                          gstRatePercent: parseFloat(e.target.value),
+                        })
+                      }
+                    >
+                      {GST_RATES.map((rate) => (
+                        <option key={rate} value={rate}>
+                          {rate}%
+                        </option>
+                      ))}
+                    </SelectInput>
+                  </Field>
+                </div>
               </div>
             </div>
           ))}

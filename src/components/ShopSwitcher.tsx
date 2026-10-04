@@ -71,7 +71,7 @@ export function ShopSwitcher() {
         <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 text-xs">
           🏪
         </span>
-        <span className="max-w-[140px] sm:max-w-[180px] truncate">
+        <span className="max-w-[90px] min-[360px]:max-w-[130px] sm:max-w-[180px] truncate">
           {session.activeShopName || "My Store"}
         </span>
         <svg

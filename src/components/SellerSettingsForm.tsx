@@ -131,19 +131,21 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
                   onChange={(e) => update("gstin", e.target.value)}
                 />
               </Field>
-              <Field label="State name">
-                <TextInput
-                  value={form.stateName}
-                  onChange={(e) => update("stateName", e.target.value)}
-                />
-              </Field>
-              <Field label="State code" hint="e.g. 27 for Maharashtra">
-                <TextInput
-                  value={form.stateCode}
-                  onChange={(e) => update("stateCode", e.target.value)}
-                  maxLength={2}
-                />
-              </Field>
+              <div className="grid grid-cols-2 gap-3 sm:col-span-2">
+                <Field label="State name">
+                  <TextInput
+                    value={form.stateName}
+                    onChange={(e) => update("stateName", e.target.value)}
+                  />
+                </Field>
+                <Field label="State code" hint="e.g. 27">
+                  <TextInput
+                    value={form.stateCode}
+                    onChange={(e) => update("stateCode", e.target.value)}
+                    maxLength={2}
+                  />
+                </Field>
+              </div>
               <div className="sm:col-span-2">
                 <Field label="Invoice prefix">
                   <TextInput
@@ -309,7 +311,7 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
       </div>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-5">
-        <Button type="submit" variant="primary" disabled={pending} className="px-6 py-2.5 rounded-xl font-bold shadow-sm">
+        <Button type="submit" variant="primary" disabled={pending} className="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold shadow-sm">
           {pending ? "Saving…" : "Save settings"}
         </Button>
         {message ? (

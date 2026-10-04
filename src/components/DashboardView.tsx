@@ -300,7 +300,8 @@ export function DashboardView({ stats, isLocal = true }: Props) {
       <div className="fixed bottom-6 right-6 z-50">
         <Link 
           href="/invoices/new" 
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-[#4318ff] to-indigo-500 text-white shadow-[0_8px_30px_rgba(67,24,255,0.4)] hover:shadow-[0_12px_40px_rgba(67,24,255,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 animate-pulse-slow border border-white/20"
+          aria-label="Create new invoice"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-[#4318ff] to-indigo-500 text-white shadow-[0_8px_30px_rgba(67,24,255,0.4)] hover:shadow-[0_12px_40px_rgba(67,24,255,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
         >
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
