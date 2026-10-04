@@ -236,7 +236,14 @@ export function CustomersManager({ initialCustomers, initialQuery }: Props) {
                     ? "No customers matched your search query. Try clearing the search filter."
                     : "Save your frequent clients here to auto-fill billing address, state, and GSTIN when issuing new invoices."
                 }
-                hint="Fill out the form on the right to add your first customer"
+                hint={
+                  initialQuery ? undefined : (
+                    <span>
+                      Fill out the form <span className="lg:hidden">below</span><span className="hidden lg:inline">on the right</span> to add your first customer
+                    </span>
+                  )
+                }
+                hintHref="#customer-form-section"
                 className="min-h-[360px]"
               />
             </div>

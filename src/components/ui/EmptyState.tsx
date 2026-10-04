@@ -9,7 +9,8 @@ type EmptyStateProps = {
   actionLabel?: string;
   actionHref?: string;
   onAction?: () => void;
-  hint?: string;
+  hint?: React.ReactNode;
+  hintHref?: string;
   icon?: React.ReactNode;
   className?: string;
 };
@@ -21,6 +22,7 @@ export function EmptyState({
   actionHref,
   onAction,
   hint,
+  hintHref,
   icon,
   className = "",
 }: EmptyStateProps) {
@@ -58,12 +60,22 @@ export function EmptyState({
         {description}
       </p>
 
-      {/* Helpful Hint (e.g. for side-by-side forms) */}
+      {/* Helpful Hint (e.g. for side-by-side or stacked forms) */}
       {hint && (
-        <div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-indigo-100 bg-indigo-50/60 px-3.5 py-1.5 text-xs font-semibold text-[#4318ff]">
-          <span>👉</span>
-          <span>{hint}</span>
-        </div>
+        hintHref ? (
+          <a
+            href={hintHref}
+            className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-indigo-100 bg-indigo-50/70 px-4 py-1.5 text-xs font-semibold text-[#4318ff] hover:bg-indigo-100 transition-colors shadow-2xs"
+          >
+            <span>👉</span>
+            <span>{hint}</span>
+          </a>
+        ) : (
+          <div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-indigo-100 bg-indigo-50/60 px-3.5 py-1.5 text-xs font-semibold text-[#4318ff]">
+            <span>👉</span>
+            <span>{hint}</span>
+          </div>
+        )
       )}
 
       {/* Action Button */}

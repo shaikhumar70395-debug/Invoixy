@@ -223,7 +223,14 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
                     ? "No products matched your search query. Try clearing the search filter."
                     : "Save your frequently billed products or service catalog with default rates and HSN codes to generate invoices in seconds."
                 }
-                hint="Fill out the form on the right to add your first product"
+                hint={
+                  initialQuery ? undefined : (
+                    <span>
+                      Fill out the form <span className="lg:hidden">below</span><span className="hidden lg:inline">on the right</span> to add your first product
+                    </span>
+                  )
+                }
+                hintHref="#product-form-section"
                 className="min-h-[360px]"
               />
             </div>
