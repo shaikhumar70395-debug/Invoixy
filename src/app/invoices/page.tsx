@@ -76,23 +76,23 @@ export default async function InvoicesPage({ searchParams }: Props) {
             Search and manage issued invoices by number, buyer, GSTIN, or date.
           </p>
         </div>
-        <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-2.5">
+        <div className="flex w-full sm:w-auto items-center gap-2.5 sm:gap-3">
           {invoices.length > 0 && (
             <a
               href={exportUrl}
               download={buyer ? `invoices_${buyer.replace(/[^a-zA-Z0-9_-]/g, "_")}.csv` : "gst_invoices_export.csv"}
-              className="inline-flex min-h-[40px] items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-[#4318ff] hover:border-slate-300 transition-colors"
+              className="flex-1 sm:flex-initial inline-flex min-h-[40px] sm:min-w-[140px] items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-[#4318ff] hover:border-slate-300 transition-colors whitespace-nowrap"
               title={buyer ? `Download statements for ${buyer}` : "Download invoices as CSV / Excel"}
             >
               <svg className="h-4.5 w-4.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span className="truncate max-w-[140px] sm:max-w-none">{buyer ? `Export "${buyer}"` : hasFilter ? "Export Filtered" : "Export CSV"}</span>
+              <span>{buyer ? `Export "${buyer}"` : hasFilter ? "Export Filtered" : "Export CSV"}</span>
             </a>
           )}
           <Link
             href="/invoices/new"
-            className="inline-flex min-h-[40px] items-center justify-center rounded-xl border border-indigo-600 bg-[#4318ff] px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm transition-all hover:bg-[#3412cc] shrink-0"
+            className="flex-1 sm:flex-initial inline-flex min-h-[40px] sm:min-w-[140px] items-center justify-center rounded-xl border border-indigo-600 bg-[#4318ff] px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm transition-all hover:bg-[#3412cc] whitespace-nowrap"
           >
             + New invoice
           </Link>
