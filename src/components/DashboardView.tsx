@@ -78,7 +78,7 @@ export function DashboardView({ stats, isLocal = true }: Props) {
       {/* Header Greeting */}
       <div className="mb-6">
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{greeting} 👋</h1>
-        <p className="text-base text-slate-600 mt-1 font-medium">Here's what's happening with your business.</p>
+        <p className="text-sm text-slate-500 mt-1 font-medium">Sales and billing overview</p>
       </div>
 
       {/* Metrics Row (4 Columns on Desktop) */}
