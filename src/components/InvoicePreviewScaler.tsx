@@ -38,20 +38,30 @@ export function InvoicePreviewScaler({ children, mode = "fit" }: Props) {
     function measure() {
       const el = paperRef.current;
       if (!el) return;
-      setPaperHeight(el.offsetHeight);
+      const child = el.firstElementChild as HTMLElement | null;
+      const h = Math.max(
+        el.offsetHeight,
+        el.scrollHeight,
+        child ? child.scrollHeight : 0,
+        child ? child.offsetHeight : 0,
+      );
+      setPaperHeight(h);
     }
 
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(paper);
+    if (paper.firstElementChild) {
+      observer.observe(paper.firstElementChild);
+    }
     return () => observer.disconnect();
   }, [children, scale]);
 
   return (
     <div
       ref={shellRef}
-      className="print-scale-shell w-full overflow-hidden"
-      style={{ height: paperHeight > 0 ? paperHeight * scale : undefined }}
+      className="print-scale-shell w-full overflow-hidden pb-6"
+      style={{ height: paperHeight > 0 ? Math.ceil(paperHeight * scale) + 28 : undefined }}
     >
       <div
         ref={paperRef}

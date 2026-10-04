@@ -66,7 +66,7 @@ export function InvoicePreview({
         className="invoice-paper min-h-[1123px] bg-white p-8 text-black shadow-sm ring-1 ring-zinc-200"
         style={{ fontFamily: "var(--font-geist-sans), Arial, sans-serif" }}
       >
-        <table className="h-full w-full border-collapse overflow-hidden rounded-sm border border-zinc-400 text-[11px]">
+        <table className="w-full border-collapse rounded-sm border border-zinc-400 text-[11px]">
           <tbody>
             <tr>
               <Cell
@@ -296,7 +296,7 @@ export function InvoicePreview({
               </Cell>
             </tr>
             <tr>
-              <Cell colSpan={5} className="h-[132px] border-r border-zinc-400 align-top">
+              <Cell colSpan={5} className="border-r border-zinc-400 align-top">
                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">
                   Company&apos;s Bank Details
                 </p>
@@ -319,16 +319,16 @@ export function InvoicePreview({
                   </p>
                 </div>
               </Cell>
-              <Cell colSpan={4} className="h-[132px] align-top">
+              <Cell colSpan={4} className="align-top">
                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">
                   Declaration
                 </p>
                 <p className="mt-2 text-[10px] leading-relaxed">
                   {seller.declaration}
                 </p>
-                <div className="mt-10 flex flex-col items-end text-right">
+                <div className="mt-6 flex flex-col items-end text-right">
                   <p className="text-[10px]">for {seller.companyName}</p>
-                  <p className="mt-8 border-t border-zinc-400 pt-1 text-[10px] text-zinc-600">
+                  <p className="mt-6 border-t border-zinc-400 pt-1 text-[10px] text-zinc-600">
                     Authorised Signatory
                   </p>
                 </div>
