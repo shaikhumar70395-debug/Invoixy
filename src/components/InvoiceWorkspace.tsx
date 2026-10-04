@@ -4,6 +4,7 @@ import { saveInvoiceAction, updateInvoiceAction } from "@/app/actions/invoice";
 import { saveDraftAction, clearDraftAction } from "@/app/actions/draft";
 import { InvoiceForm } from "@/components/InvoiceForm";
 import { InvoicePreview } from "@/components/InvoicePreview";
+import { AiInvoicePrompt } from "@/components/AiInvoicePrompt";
 import { Button } from "@/components/ui/Button";
 import { IconDocument, IconPrinter, IconRefresh } from "@/components/ui/icons";
 import { createSampleInvoiceDraft, createEmptyInvoiceDraft } from "@/lib/defaults";
@@ -252,6 +253,26 @@ export function InvoiceWorkspace({
               </span>
             )}
           </div>
+ 
+          {!isEditMode && (
+            <AiInvoicePrompt
+              onApply={(aiData) => {
+                setDraft((prev) =>
+                  applyTaxModeFromStates(
+                    {
+                      ...prev,
+                      buyer: {
+                        ...prev.buyer,
+                        ...aiData.buyer,
+                      },
+                      lines: aiData.lines.length > 0 ? aiData.lines : prev.lines,
+                    },
+                    seller,
+                  ),
+                );
+              }}
+            />
+          )}
 
           <InvoiceForm
             seller={seller}
