@@ -96,7 +96,7 @@ export function WhatsAppShareModal({
           type="button"
           onClick={() => setIsOpen(true)}
           title={`Share ${invoiceNumber} on WhatsApp`}
-          className={`inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 sm:px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300 transition-colors shadow-2xs whitespace-nowrap shrink-0 ${className}`}
+          className={`inline-flex min-h-[36px] items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 sm:px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300 transition-colors shadow-2xs whitespace-nowrap ${className}`}
         >
           <IconWhatsApp className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
           <span className="whitespace-nowrap">{triggerButtonText}</span>

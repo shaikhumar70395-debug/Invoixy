@@ -81,10 +81,10 @@ export default async function InvoicesPage({ searchParams }: Props) {
             <a
               href={exportUrl}
               download={buyer ? `invoices_${buyer.replace(/[^a-zA-Z0-9_-]/g, "_")}.csv` : "gst_invoices_export.csv"}
-              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-200 bg-white px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-[#4318ff] hover:border-slate-300 transition-colors"
+              className="inline-flex min-h-[40px] items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-[#4318ff] hover:border-slate-300 transition-colors"
               title={buyer ? `Download statements for ${buyer}` : "Download invoices as CSV / Excel"}
             >
-              <svg className="h-4 w-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-4.5 w-4.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <span className="truncate max-w-[140px] sm:max-w-none">{buyer ? `Export "${buyer}"` : hasFilter ? "Export Filtered" : "Export CSV"}</span>
@@ -92,7 +92,7 @@ export default async function InvoicesPage({ searchParams }: Props) {
           )}
           <Link
             href="/invoices/new"
-            className="rounded-xl border border-indigo-600 bg-[#4318ff] px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition-all hover:bg-[#3412cc] shrink-0"
+            className="inline-flex min-h-[40px] items-center justify-center rounded-xl border border-indigo-600 bg-[#4318ff] px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm transition-all hover:bg-[#3412cc] shrink-0"
           >
             + New invoice
           </Link>
@@ -196,7 +196,7 @@ export default async function InvoicesPage({ searchParams }: Props) {
                 <div className="mt-5 flex items-center gap-2 sm:gap-3">
                   <Link
                     href={`/invoices/${invoice.id}`}
-                    className="flex min-h-[42px] flex-1 items-center justify-center rounded-xl bg-[#4318ff] px-2.5 sm:px-4 text-xs sm:text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#3412cc] whitespace-nowrap"
+                    className="inline-flex min-h-[36px] flex-1 sm:flex-initial items-center justify-center rounded-xl bg-[#4318ff] px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-colors hover:bg-[#3412cc] whitespace-nowrap"
                   >
                     Open Invoice
                   </Link>
@@ -209,10 +209,11 @@ export default async function InvoicesPage({ searchParams }: Props) {
                     dueDate={invoice.dueDate}
                     variant="compact"
                     triggerButtonText="WhatsApp"
+                    className="flex-1 sm:flex-initial"
                   />
                   <Link
                     href={`/invoices/new?duplicate=${invoice.id}`}
-                    className="flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 sm:px-4 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 hover:text-[#4318ff] shrink-0"
+                    className="inline-flex min-h-[36px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2.5 sm:px-3 py-2 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 hover:text-[#4318ff] shrink-0"
                     title="Duplicate Invoice"
                   >
                     <IconCopy className="h-4 w-4" />
