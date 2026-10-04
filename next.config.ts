@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForDev: false,
   },
-  output: "standalone",
+  output: process.env.VERCEL ? undefined : "standalone",
 };
 
 export default nextConfig;
