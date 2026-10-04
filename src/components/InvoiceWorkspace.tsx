@@ -176,30 +176,49 @@ export function InvoiceWorkspace({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.92fr)_minmax(520px,1.08fr)] xl:gap-8 2xl:grid-cols-[minmax(0,0.9fr)_minmax(620px,1.1fr)]">
         <div className={`no-print min-w-0 space-y-4 ${activeTab === "edit" ? "block" : "hidden xl:block"}`}>
-          <div className="no-print sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 xl:static xl:mx-0 xl:bg-transparent xl:px-0 xl:pb-4 xl:pt-0 xl:backdrop-blur-none">
-            <Button variant="primary" onClick={onSaveInvoice} disabled={isSaving}>
-              <IconDocument />
-              {isSaving
-                ? isEditMode
-                  ? "Updating..."
-                  : "Saving..."
-                : isEditMode
-                  ? "Update invoice"
-                  : "Save invoice"}
+          <div className="no-print sticky top-0 z-20 -mx-4 flex items-center gap-2 border-b border-slate-200 bg-slate-50/95 px-4 py-2.5 backdrop-blur sm:-mx-6 sm:px-6 xl:static xl:mx-0 xl:bg-transparent xl:px-0 xl:pb-4 xl:pt-0 xl:backdrop-blur-none">
+            <Button
+              variant="primary"
+              onClick={onSaveInvoice}
+              disabled={isSaving}
+              className="flex-1 sm:flex-none justify-center px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-bold shadow-sm"
+            >
+              <IconDocument className="h-4 w-4 shrink-0" />
+              <span>
+                {isSaving
+                  ? isEditMode
+                    ? "Updating..."
+                    : "Saving..."
+                  : isEditMode
+                    ? "Update invoice"
+                    : "Save invoice"}
+              </span>
             </Button>
-            <Button variant="ghost" onClick={onResetForm}>
-              <IconRefresh />
-              Reset form
+
+            <Button
+              variant="secondary"
+              onClick={onPrintPreview}
+              className="flex-1 sm:flex-none justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold"
+            >
+              <IconPrinter className="h-4 w-4 shrink-0" />
+              <span>Print / PDF</span>
             </Button>
-            <Button variant="secondary" onClick={onPrintPreview}>
-              <IconPrinter />
-              Print / PDF
+
+            <Button
+              variant="ghost"
+              onClick={onResetForm}
+              className="shrink-0 px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm text-slate-500 hover:text-slate-900 border border-slate-200/80 sm:border-transparent rounded-xl"
+              title="Reset form"
+              aria-label="Reset form"
+            >
+              <IconRefresh className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">Reset</span>
             </Button>
 
             {/* Draft auto-save status (create mode only) */}
             {!isEditMode && saveStatus !== "idle" && (
               <span
-                className={`ml-auto flex items-center gap-1.5 text-xs font-medium ${statusColor[saveStatus]}`}
+                className={`hidden md:flex ml-auto items-center gap-1.5 text-xs font-medium ${statusColor[saveStatus]}`}
                 role="status"
                 aria-live="polite"
               >
