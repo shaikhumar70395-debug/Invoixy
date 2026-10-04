@@ -145,6 +145,14 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
                 />
               </Field>
             </div>
+            <div className="sm:col-span-2">
+              <Field label="Invoice prefix" hint="e.g. APEX">
+                <TextInput
+                  value={form.invoicePrefix}
+                  onChange={(e) => update("invoicePrefix", e.target.value)}
+                />
+              </Field>
+            </div>
           </div>
         </SectionCard>
 
@@ -232,27 +240,15 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
         </div>
       </div>
 
-      {/* Full-Width Section: Declaration & Invoice Terms */}
-      <SectionCard title="Declaration & Invoice Terms" description="Prefix and default declaration applied to invoices">
-        <div className="grid gap-4 sm:grid-cols-4">
-          <div className="sm:col-span-1">
-            <Field label="Invoice prefix" hint="e.g. APEX">
-              <TextInput
-                value={form.invoicePrefix}
-                onChange={(e) => update("invoicePrefix", e.target.value)}
-              />
-            </Field>
-          </div>
-          <div className="sm:col-span-3">
-            <Field label="Declaration text">
-              <TextArea
-                value={form.declaration}
-                onChange={(e) => update("declaration", e.target.value)}
-                rows={3}
-              />
-            </Field>
-          </div>
-        </div>
+      {/* Full-Width Section: Declaration & Terms */}
+      <SectionCard title="Declaration & Terms" description="Default declaration printed on invoice footer">
+        <Field label="Declaration text">
+          <TextArea
+            value={form.declaration}
+            onChange={(e) => update("declaration", e.target.value)}
+            rows={3}
+          />
+        </Field>
       </SectionCard>
 
       {/* Local-only: Database backup */}
