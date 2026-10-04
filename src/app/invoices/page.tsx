@@ -127,12 +127,12 @@ export default async function InvoicesPage({ searchParams }: Props) {
                         {invoice.buyerName || "Cash Customer"}
                       </Link>
                     </div>
-                    <div className="mt-1 flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
+                    <div className="mt-1 flex items-center gap-2 min-w-0">
+                      <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md whitespace-nowrap shrink-0">
                         # {invoice.invoiceNumber}
                       </span>
                       {invoice.buyerGstin ? (
-                        <span className="truncate font-mono text-[11px] text-slate-400">
+                        <span className="truncate font-mono text-[11px] text-slate-400 min-w-0">
                           GSTIN: {invoice.buyerGstin}
                         </span>
                       ) : null}
@@ -196,7 +196,7 @@ export default async function InvoicesPage({ searchParams }: Props) {
                 <div className="mt-5 flex items-center gap-2 sm:gap-3">
                   <Link
                     href={`/invoices/${invoice.id}`}
-                    className="flex min-h-[42px] flex-1 items-center justify-center rounded-xl bg-[#4318ff] px-4 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#3412cc]"
+                    className="flex min-h-[42px] flex-1 items-center justify-center rounded-xl bg-[#4318ff] px-2.5 sm:px-4 text-xs sm:text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#3412cc] whitespace-nowrap"
                   >
                     Open Invoice
                   </Link>
@@ -212,7 +212,8 @@ export default async function InvoicesPage({ searchParams }: Props) {
                   />
                   <Link
                     href={`/invoices/new?duplicate=${invoice.id}`}
-                    className="flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 sm:px-4 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 hover:text-[#4318ff]"
+                    className="flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 sm:px-4 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 hover:text-[#4318ff] shrink-0"
+                    title="Duplicate Invoice"
                   >
                     <IconCopy className="h-4 w-4" />
                     <span className="hidden sm:inline">Duplicate</span>

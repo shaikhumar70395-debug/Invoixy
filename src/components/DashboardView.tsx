@@ -269,10 +269,10 @@ export function DashboardView({ stats, isLocal = true }: Props) {
                       {inv.buyerName || "Cash Customer"}
                     </Link>
                   </div>
-                  <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-                    <span className="font-mono text-slate-400"># {inv.invoiceNumber}</span>
+                  <div className="flex items-center gap-2 text-xs font-medium text-slate-500 min-w-0">
+                    <span className="font-mono text-slate-400 whitespace-nowrap shrink-0"># {inv.invoiceNumber}</span>
                     <span>&bull;</span>
-                    <span>{formatDateDisplay(inv.invoiceDate)}</span>
+                    <span className="whitespace-nowrap">{formatDateDisplay(inv.invoiceDate)}</span>
                   </div>
                 </div>
 
