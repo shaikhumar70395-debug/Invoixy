@@ -2,13 +2,14 @@ type Props = {
   title: string;
   description?: string;
   action?: React.ReactNode;
+  className?: string;
   children: React.ReactNode;
 };
 
-export function SectionCard({ title, description, action, children }: Props) {
+export function SectionCard({ title, description, action, className = "", children }: Props) {
   return (
-    <section className="rounded-2xl border border-slate-200/80 bg-white shadow-xs">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+    <section className={`rounded-2xl border border-slate-200/80 bg-white shadow-xs flex flex-col ${className}`}>
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4 shrink-0">
         <div>
           <h3 className="text-base font-bold tracking-tight text-slate-900">{title}</h3>
           {description ? (
@@ -17,7 +18,7 @@ export function SectionCard({ title, description, action, children }: Props) {
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}
       </div>
-      <div className="space-y-4 p-5">{children}</div>
+      <div className="space-y-4 p-5 flex-1">{children}</div>
     </section>
   );
 }
