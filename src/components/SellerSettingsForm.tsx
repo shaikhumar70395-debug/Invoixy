@@ -145,14 +145,6 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
                 />
               </Field>
             </div>
-            <div className="sm:col-span-2">
-              <Field label="Invoice prefix">
-                <TextInput
-                  value={form.invoicePrefix}
-                  onChange={(e) => update("invoicePrefix", e.target.value)}
-                />
-              </Field>
-            </div>
           </div>
         </SectionCard>
 
@@ -210,58 +202,57 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
             description="Payment details on the invoice footer"
             className="flex-1 flex flex-col justify-between"
           >
-            <div className="space-y-4 flex-1 flex flex-col justify-between">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Bank name">
-                  <TextInput
-                    value={form.bankName}
-                    onChange={(e) => update("bankName", e.target.value)}
-                  />
-                </Field>
-                <Field label="Branch">
-                  <TextInput
-                    value={form.bankBranch}
-                    onChange={(e) => update("bankBranch", e.target.value)}
-                  />
-                </Field>
-                <Field label="Account number">
-                  <TextInput
-                    value={form.bankAccountNo}
-                    onChange={(e) => update("bankAccountNo", e.target.value)}
-                  />
-                </Field>
-                <Field label="IFSC">
-                  <TextInput
-                    value={form.bankIfsc}
-                    onChange={(e) => update("bankIfsc", e.target.value)}
-                  />
-                </Field>
-              </div>
-
-              {/* Payment Notice Badge */}
-              <div className="rounded-xl border border-indigo-100/90 bg-indigo-50/40 p-3.5 flex items-start gap-3 mt-auto">
-                <span className="text-base shrink-0 select-none">🏦</span>
-                <div className="min-w-0 text-xs">
-                  <span className="font-bold text-slate-800">Printed on Invoice Footer:</span>{" "}
-                  <span className="text-slate-500 font-medium leading-relaxed">
-                    Account and IFSC credentials appear in the remittance instructions on generated PDFs for customer bank transfers.
-                  </span>
-                </div>
-              </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Bank name">
+                <TextInput
+                  value={form.bankName}
+                  onChange={(e) => update("bankName", e.target.value)}
+                />
+              </Field>
+              <Field label="Branch">
+                <TextInput
+                  value={form.bankBranch}
+                  onChange={(e) => update("bankBranch", e.target.value)}
+                />
+              </Field>
+              <Field label="Account number">
+                <TextInput
+                  value={form.bankAccountNo}
+                  onChange={(e) => update("bankAccountNo", e.target.value)}
+                />
+              </Field>
+              <Field label="IFSC">
+                <TextInput
+                  value={form.bankIfsc}
+                  onChange={(e) => update("bankIfsc", e.target.value)}
+                />
+              </Field>
             </div>
           </SectionCard>
         </div>
       </div>
 
-      {/* Full-Width Section: Declaration & Terms */}
-      <SectionCard title="Declaration & Terms" description="Default declaration printed on invoice footer">
-        <Field label="Declaration text">
-          <TextArea
-            value={form.declaration}
-            onChange={(e) => update("declaration", e.target.value)}
-            rows={3}
-          />
-        </Field>
+      {/* Full-Width Section: Declaration & Invoice Terms */}
+      <SectionCard title="Declaration & Invoice Terms" description="Prefix and default declaration applied to invoices">
+        <div className="grid gap-4 sm:grid-cols-4">
+          <div className="sm:col-span-1">
+            <Field label="Invoice prefix" hint="e.g. APEX">
+              <TextInput
+                value={form.invoicePrefix}
+                onChange={(e) => update("invoicePrefix", e.target.value)}
+              />
+            </Field>
+          </div>
+          <div className="sm:col-span-3">
+            <Field label="Declaration text">
+              <TextArea
+                value={form.declaration}
+                onChange={(e) => update("declaration", e.target.value)}
+                rows={3}
+              />
+            </Field>
+          </div>
+        </div>
       </SectionCard>
 
       {/* Local-only: Database backup */}
