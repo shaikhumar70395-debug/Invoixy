@@ -2,12 +2,11 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createPrismaClient } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { hashPassword, verifyPassword, signToken, verifyToken, type UserSession } from "@/lib/auth";
 import { getOrCreateDefaultShop, getUserShops, createShopForUser } from "@/lib/shops";
 import { SetupSecuritySchema, LoginSchema, UpdateSecuritySchema } from "@/lib/schema";
 
-const prisma = createPrismaClient();
 const COOKIE_NAME = "auth-token";
 
 export async function checkSecuritySetup() {
