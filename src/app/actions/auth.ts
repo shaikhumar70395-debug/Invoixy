@@ -355,6 +355,66 @@ export async function createNewShopAction(name: string) {
   }
 }
 
+export async function deleteShopAction(shopId: string, confirmationName: string) {
+  try {
+    const current = await getCurrentSession();
+    if (!current) return { error: "Not authenticated" };
+
+    const shop = await prisma.shop.findUnique({
+      where: { id: shopId },
+    });
+    if (!shop) return { error: "Business not found." };
+
+    if (confirmationName.trim() !== shop.name.trim()) {
+      return { error: `Confirmation text must match "${shop.name}".` };
+    }
+
+    const allShops = await getUserShops(current.userId);
+    if (allShops.length <= 1) {
+      return { error: "You cannot delete your only remaining business." };
+    }
+
+    // Cascade delete all child items inside transaction for complete cleanup
+    await prisma.$transaction(async (tx) => {
+      await tx.invoiceLine.deleteMany({
+        where: { invoice: { shopId } },
+      });
+      await tx.invoice.deleteMany({ where: { shopId } });
+      await tx.customer.deleteMany({ where: { shopId } });
+      await tx.product.deleteMany({ where: { shopId } });
+      await tx.invoiceSequence.deleteMany({ where: { shopId } });
+      await tx.invoiceDraftRecord.deleteMany({ where: { shopId } });
+      await tx.sellerSettings.deleteMany({ where: { shopId } });
+      await tx.shopMember.deleteMany({ where: { shopId } });
+      await tx.shop.delete({ where: { id: shopId } });
+    });
+
+    // Pick a remaining shop to switch to
+    const remainingShops = allShops.filter((s) => s.id !== shopId);
+    const nextShop = remainingShops[0];
+
+    const newSession: UserSession = {
+      ...current,
+      activeShopId: nextShop.id,
+      activeShopName: nextShop.name,
+    };
+
+    const token = await signToken(newSession);
+    const cookieStore = await cookies();
+    cookieStore.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+
+    return { success: true, nextShopName: nextShop.name };
+  } catch (error) {
+    console.error("Failed to delete shop:", error);
+    return { error: "Failed to delete business." };
+  }
+}
+
 export async function emailLoginAction({
   email,
   name,
