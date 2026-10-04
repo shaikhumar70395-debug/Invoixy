@@ -287,26 +287,7 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
                 </div>
               </div>
             </SectionCard>
-          ) : (
-            <SectionCard
-              title="Production Database"
-              description="Securely hosted on Turso libSQL Cloud"
-            >
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-5 shadow-sm">
-                <div className="flex gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500 text-white font-bold text-lg">
-                    ☁️
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-zinc-900 font-sans">Cloud database is connected</h4>
-                    <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-                      Your application is running in production mode on Turso.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </SectionCard>
-          )}
+          ) : null}
         </div>
       </div>
 
