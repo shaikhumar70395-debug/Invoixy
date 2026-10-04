@@ -20,7 +20,7 @@ export function formatRs(value: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  return isNeg ? `Rs. -${formatted}` : `Rs. ${formatted}`;
+  return isNeg ? `Rs.\u00a0-${formatted}` : `Rs.\u00a0${formatted}`;
 }
 
 /** Format numeric quantity without currency symbol */

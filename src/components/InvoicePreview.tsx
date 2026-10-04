@@ -179,33 +179,33 @@ export function InvoicePreview({
             <tr className="bg-zinc-800">
               <Cell className="w-8 border-zinc-700 text-center text-[10px] font-bold text-white">Sl</Cell>
               <Cell className="border-zinc-700 text-[10px] font-bold text-white">Description of Goods</Cell>
-              <Cell className="w-[72px] border-zinc-700 text-[10px] font-bold text-white">HSN/SAC</Cell>
-              <Cell className="w-16 border-zinc-700 text-right text-[10px] font-bold text-white">Qty</Cell>
-              <Cell className="w-20 border-zinc-700 text-right text-[10px] font-bold text-white">Rate</Cell>
+              <Cell className="w-16 border-zinc-700 text-[10px] font-bold text-white">HSN/SAC</Cell>
+              <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold text-white">Qty</Cell>
+              <Cell className="w-24 border-zinc-700 text-right text-[10px] font-bold text-white whitespace-nowrap">Rate</Cell>
               <Cell className="w-10 border-zinc-700 text-center text-[10px] font-bold text-white">per</Cell>
               <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold text-white">Disc.%</Cell>
               <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold text-white">GST%</Cell>
-              <Cell className="w-24 border-zinc-700 text-right text-[10px] font-bold text-white">Amount</Cell>
+              <Cell className="w-28 border-zinc-700 text-right text-[10px] font-bold text-white whitespace-nowrap">Amount</Cell>
             </tr>
             {totals.lines.map((line) => (
               <tr key={line.id}>
                 <Cell className="text-center tabular-nums">{line.slNo}</Cell>
                 <Cell className="leading-relaxed">{line.description}</Cell>
                 <Cell className="tabular-nums">{line.hsnSac}</Cell>
-                <Cell className="text-right tabular-nums">
+                <Cell className="text-right tabular-nums whitespace-nowrap">
                   {line.quantity || ""}
                 </Cell>
-                <Cell className="text-right tabular-nums">
+                <Cell className="text-right tabular-nums whitespace-nowrap font-medium">
                   {line.rate ? formatRs(line.rate) : ""}
                 </Cell>
                 <Cell className="text-center">{line.unit}</Cell>
-                <Cell className="text-right tabular-nums">
+                <Cell className="text-right tabular-nums whitespace-nowrap">
                   {line.discountPercent ? line.discountPercent : ""}
                 </Cell>
-                <Cell className="text-right tabular-nums">
+                <Cell className="text-right tabular-nums whitespace-nowrap">
                   {line.gstRatePercent || ""}
                 </Cell>
-                <Cell className="text-right tabular-nums font-medium">
+                <Cell className="text-right tabular-nums font-semibold whitespace-nowrap">
                   {line.amount ? formatRs(line.amount) : ""}
                 </Cell>
               </tr>
@@ -223,11 +223,11 @@ export function InvoicePreview({
               <Cell colSpan={3} className="bg-zinc-50 text-right text-[10px] font-bold">
                 Total
               </Cell>
-              <Cell className="bg-zinc-50 text-right text-[10px] font-bold tabular-nums">
+              <Cell className="bg-zinc-50 text-right text-[10px] font-bold tabular-nums whitespace-nowrap">
                 {formatQuantity(totals.totalQuantity)}
               </Cell>
               <Cell colSpan={4} className="bg-zinc-50" />
-              <Cell className="bg-zinc-50 text-right text-[10px] font-bold tabular-nums">
+              <Cell className="bg-zinc-50 text-right text-[10px] font-bold tabular-nums whitespace-nowrap">
                 {formatRs(totals.subtotal)}
               </Cell>
             </tr>
@@ -245,7 +245,7 @@ export function InvoicePreview({
                     <Cell colSpan={8} className="text-right text-[10px]">
                       Output CGST @ {row.cgstRate}%
                     </Cell>
-                    <Cell className="text-right text-[10px] tabular-nums">
+                    <Cell className="text-right text-[10px] tabular-nums whitespace-nowrap">
                       {formatRs(row.cgstAmount)}
                     </Cell>
                   </tr>,
@@ -253,7 +253,7 @@ export function InvoicePreview({
                     <Cell colSpan={8} className="text-right text-[10px]">
                       Output SGST @ {row.sgstRate}%
                     </Cell>
-                    <Cell className="text-right text-[10px] tabular-nums">
+                    <Cell className="text-right text-[10px] tabular-nums whitespace-nowrap">
                       {formatRs(row.sgstAmount)}
                     </Cell>
                   </tr>,
@@ -263,7 +263,7 @@ export function InvoicePreview({
                     <Cell colSpan={8} className="text-right text-[10px]">
                       Output IGST @ {row.igstRate}%
                     </Cell>
-                    <Cell className="text-right text-[10px] tabular-nums">
+                    <Cell className="text-right text-[10px] tabular-nums whitespace-nowrap">
                       {formatRs(row.igstAmount)}
                     </Cell>
                   </tr>
@@ -272,7 +272,7 @@ export function InvoicePreview({
               <Cell colSpan={8} className="text-right text-[10px]">
                 Round Off
               </Cell>
-              <Cell className="text-right text-[10px] tabular-nums">
+              <Cell className="text-right text-[10px] tabular-nums whitespace-nowrap">
                 {formatRs(totals.roundOff)}
               </Cell>
             </tr>
@@ -280,7 +280,7 @@ export function InvoicePreview({
               <Cell colSpan={8} className="border-zinc-900 text-right text-sm font-bold text-white">
                 Grand Total
               </Cell>
-              <Cell className="border-zinc-900 text-right text-sm font-bold tabular-nums text-white">
+              <Cell className="border-zinc-900 text-right text-sm font-bold tabular-nums text-white whitespace-nowrap">
                 {formatRs(totals.grandTotal)}
               </Cell>
             </tr>

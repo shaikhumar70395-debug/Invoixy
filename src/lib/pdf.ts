@@ -241,7 +241,7 @@ function drawItems(
   startY: number,
 ) {
   const x = PAGE.margin;
-  const widths = [24, 190, 54, 42, 55, 34, 42, 36, 50];
+  const widths = [20, 185, 50, 32, 72, 26, 32, 32, 78];
   const headers = ["Sl", "Description", "HSN/SAC", "Qty", "Rate", "per", "Disc.%", "GST%", "Amount"];
   const rowHeight = 28;
   let y = startY;
@@ -316,15 +316,20 @@ function drawItems(
     y += 22;
   }
 
+  const qstartX = x + 20 + 185 + 50; // x + 255
+  const qwidth = 32;
+  const astartX = x + 20 + 185 + 50 + 32 + 72 + 26 + 32 + 32; // x + 449
+  const awidth = 78;
+
   doc.rect(x, y, PAGE.width - PAGE.margin * 2, 24).fillAndStroke(COLORS.pale, COLORS.line);
   doc
     .font("Helvetica-Bold")
     .fontSize(8)
     .fillColor(COLORS.ink)
-    .text("Total", x + 8, y + 8, { width: 250, align: "right" })
-    .text(money(totals.subtotal), x + 430, y + 8, { width: 62, align: "right" });
-  doc.text(formatQuantity(totals.totalQuantity), x + 268, y + 8, {
-    width: 40,
+    .text("Total", x + 8, y + 8, { width: 240, align: "right" })
+    .text(money(totals.subtotal), astartX + 4, y + 8, { width: awidth - 8, align: "right" });
+  doc.text(formatQuantity(totals.totalQuantity), qstartX + 2, y + 8, {
+    width: qwidth - 4,
     align: "right",
   });
 
