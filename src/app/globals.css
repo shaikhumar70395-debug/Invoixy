@@ -29,6 +29,11 @@
   --color-primary-900: #1a1060;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -36,6 +41,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* Headings scale and letter spacing */

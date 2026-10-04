@@ -82,70 +82,78 @@ export function DashboardView({ stats, isLocal = true }: Props) {
       </div>
 
       {/* Metrics Row (4 Columns on Desktop) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Total Revenue */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-bold text-slate-500 tracking-wider uppercase truncate mr-1">Total Revenue</p>
-            <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center border border-indigo-100 shrink-0 text-base">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm min-w-0">
+          <div className="flex items-center justify-between gap-1 mb-2 sm:mb-3">
+            <p className="text-[10px] min-[360px]:text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-tight sm:tracking-wider leading-snug">
+              Total Revenue
+            </p>
+            <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl bg-indigo-50 flex items-center justify-center border border-indigo-100 shrink-0 text-xs sm:text-base">
               <span>📈</span>
             </div>
           </div>
-          <p className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tabular-nums tracking-tight mt-1 truncate">
+          <p className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tabular-nums tracking-tight mt-1 truncate">
             {formatMoney(stats.totalBilled)}
           </p>
-          <p className="mt-2 text-[11px] font-bold text-indigo-600 flex items-center gap-1">
+          <p className="mt-2 text-[10px] sm:text-[11px] font-bold text-indigo-600 flex items-center gap-1">
             <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
             Total billed
           </p>
         </div>
 
         {/* Total Invoices */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-bold text-slate-500 tracking-wider uppercase truncate mr-1">Total Invoices</p>
-            <div className="h-9 w-9 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200/60 shrink-0 text-base">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm min-w-0">
+          <div className="flex items-center justify-between gap-1 mb-2 sm:mb-3">
+            <p className="text-[10px] min-[360px]:text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-tight sm:tracking-wider leading-snug">
+              Total Invoices
+            </p>
+            <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200/60 shrink-0 text-xs sm:text-base">
               <span>📄</span>
             </div>
           </div>
-          <p className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tabular-nums tracking-tight mt-1 truncate">
+          <p className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tabular-nums tracking-tight mt-1 truncate">
             {stats.invoiceCount}
           </p>
-          <p className="mt-2 text-[11px] font-bold text-slate-600 flex items-center gap-1">
+          <p className="mt-2 text-[10px] sm:text-[11px] font-bold text-slate-600 flex items-center gap-1">
             <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
             Generated
           </p>
         </div>
 
         {/* Outstanding */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-bold text-slate-500 tracking-wider uppercase truncate mr-1">Outstanding</p>
-            <div className="h-9 w-9 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100 shrink-0 text-base">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm min-w-0">
+          <div className="flex items-center justify-between gap-1 mb-2 sm:mb-3">
+            <p className="text-[10px] min-[360px]:text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-tight sm:tracking-wider leading-snug">
+              Outstanding
+            </p>
+            <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100 shrink-0 text-xs sm:text-base">
               <span>⏳</span>
             </div>
           </div>
-          <p className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tabular-nums tracking-tight mt-1 truncate">
+          <p className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tabular-nums tracking-tight mt-1 truncate">
             {formatMoney(stats.outstanding)}
           </p>
-          <p className="mt-2 text-[11px] font-bold text-amber-700 flex items-center gap-1">
+          <p className="mt-2 text-[10px] sm:text-[11px] font-bold text-amber-700 flex items-center gap-1">
             <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             {stats.overdueCount > 0 ? `${stats.overdueCount} overdue` : "Awaiting"}
           </p>
         </div>
 
         {/* Paid Amount */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-bold text-slate-500 tracking-wider uppercase truncate mr-1">Paid Amount</p>
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100 shrink-0 text-base">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm min-w-0">
+          <div className="flex items-center justify-between gap-1 mb-2 sm:mb-3">
+            <p className="text-[10px] min-[360px]:text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-tight sm:tracking-wider leading-snug">
+              Paid Amount
+            </p>
+            <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100 shrink-0 text-xs sm:text-base">
               <span>💵</span>
             </div>
           </div>
-          <p className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tabular-nums tracking-tight mt-1 truncate">
+          <p className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tabular-nums tracking-tight mt-1 truncate">
             {formatMoney(stats.totalCollected)}
           </p>
-          <p className="mt-2 text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+          <p className="mt-2 text-[10px] sm:text-[11px] font-bold text-emerald-600 flex items-center gap-1">
              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
              Total paid
           </p>

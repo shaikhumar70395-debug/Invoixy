@@ -1,10 +1,16 @@
 import { AppShell } from "@/components/AppShell";
 import { AutoLockProvider } from "@/components/AutoLockProvider";
 import { checkSecuritySetup, getCurrentSession } from "@/app/actions/auth";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",

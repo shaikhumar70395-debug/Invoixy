@@ -84,15 +84,15 @@ export function AppNav({ session }: { session?: UserSession | null }) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 glass-nav shadow-[0_4px_24px_rgba(0,0,0,0.02)] no-print">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
-          <div className="flex items-center gap-3 sm:gap-4">
+      <header className="sticky top-0 z-40 glass-nav shadow-[0_4px_24px_rgba(0,0,0,0.02)] no-print w-full">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-2.5 sm:py-3.5">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
             <Link
               href="/"
-              className="flex items-center"
+              className="flex items-center shrink-0"
               onClick={() => setIsOpen(false)}
             >
-              <InvoixyLogo iconSize={30} />
+              <InvoixyLogo iconSize={28} />
             </Link>
             {pathname !== "/login" && <ShopSwitcher />}
           </div>
@@ -237,7 +237,7 @@ export function AppNav({ session }: { session?: UserSession | null }) {
           {pathname !== "/login" && (
             <button
               type="button"
-              className="rounded-md p-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 md:hidden focus:outline-none"
+              className="rounded-xl p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 md:hidden focus:outline-none shrink-0"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
               aria-expanded={isOpen}

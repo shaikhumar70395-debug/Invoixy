@@ -62,20 +62,20 @@ export function ShopSwitcher() {
   if (!session) return null;
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div className="relative inline-block text-left min-w-0" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-xl border border-slate-200/90 bg-white px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300 focus:outline-none"
+        className="flex items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-200/90 bg-white px-2 py-1.5 sm:px-3 text-xs sm:text-sm font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300 focus:outline-none min-w-0"
       >
-        <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 text-xs">
+        <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 text-xs shrink-0">
           🏪
         </span>
-        <span className="max-w-[90px] min-[360px]:max-w-[130px] sm:max-w-[180px] truncate">
+        <span className="max-w-[70px] min-[360px]:max-w-[85px] min-[400px]:max-w-[120px] sm:max-w-[180px] truncate text-slate-800">
           {session.activeShopName || "My Store"}
         </span>
         <svg
-          className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
