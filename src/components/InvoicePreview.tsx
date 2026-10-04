@@ -19,10 +19,11 @@ function Cell({
   className?: string;
   colSpan?: number;
 }) {
+  const hasCustomTextColor = /\b!?text-(white|zinc|slate|gray|neutral|black)\b/.test(className);
   return (
     <td
       colSpan={colSpan}
-      className={`border border-zinc-300 p-2 align-top text-[11px] leading-snug text-zinc-900 ${className}`}
+      className={`border border-zinc-300 p-2 align-top text-[11px] leading-snug ${hasCustomTextColor ? "" : "text-zinc-900"} ${className}`}
     >
       {children ?? "\u00a0"}
     </td>
@@ -70,7 +71,7 @@ export function InvoicePreview({
             <tr>
               <Cell
                 colSpan={9}
-                className="border-zinc-900 bg-zinc-900 py-3 text-center text-base font-bold tracking-[0.18em] text-white"
+                className="border-zinc-900 bg-zinc-900 py-3 text-center text-base font-bold tracking-[0.18em] !text-white"
               >
                 TAX INVOICE
               </Cell>
@@ -177,15 +178,15 @@ export function InvoicePreview({
               </Cell>
             </tr>
             <tr className="bg-zinc-800">
-              <Cell className="w-8 border-zinc-700 text-center text-[10px] font-bold text-white">Sl</Cell>
-              <Cell className="border-zinc-700 text-[10px] font-bold text-white">Description of Goods</Cell>
-              <Cell className="w-16 border-zinc-700 text-[10px] font-bold text-white">HSN/SAC</Cell>
-              <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold text-white">Qty</Cell>
-              <Cell className="w-24 border-zinc-700 text-right text-[10px] font-bold text-white whitespace-nowrap">Rate</Cell>
-              <Cell className="w-10 border-zinc-700 text-center text-[10px] font-bold text-white">per</Cell>
-              <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold text-white">Disc.%</Cell>
-              <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold text-white">GST%</Cell>
-              <Cell className="w-28 border-zinc-700 text-right text-[10px] font-bold text-white whitespace-nowrap">Amount</Cell>
+              <Cell className="w-8 border-zinc-700 text-center text-[10px] font-bold !text-white">Sl</Cell>
+              <Cell className="border-zinc-700 text-[10px] font-bold !text-white">Description of Goods</Cell>
+              <Cell className="w-16 border-zinc-700 text-[10px] font-bold !text-white">HSN/SAC</Cell>
+              <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold !text-white">Qty</Cell>
+              <Cell className="w-24 border-zinc-700 text-right text-[10px] font-bold !text-white whitespace-nowrap">Rate</Cell>
+              <Cell className="w-10 border-zinc-700 text-center text-[10px] font-bold !text-white">per</Cell>
+              <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold !text-white">Disc.%</Cell>
+              <Cell className="w-12 border-zinc-700 text-right text-[10px] font-bold !text-white">GST%</Cell>
+              <Cell className="w-28 border-zinc-700 text-right text-[10px] font-bold !text-white whitespace-nowrap">Amount</Cell>
             </tr>
             {totals.lines.map((line) => (
               <tr key={line.id}>
@@ -277,10 +278,10 @@ export function InvoicePreview({
               </Cell>
             </tr>
             <tr className="bg-zinc-900">
-              <Cell colSpan={8} className="border-zinc-900 text-right text-sm font-bold text-white">
+              <Cell colSpan={8} className="border-zinc-900 text-right text-sm font-bold !text-white">
                 Grand Total
               </Cell>
-              <Cell className="border-zinc-900 text-right text-sm font-bold tabular-nums text-white whitespace-nowrap">
+              <Cell className="border-zinc-900 text-right text-sm font-bold tabular-nums !text-white whitespace-nowrap">
                 {formatRs(totals.grandTotal)}
               </Cell>
             </tr>

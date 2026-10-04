@@ -105,7 +105,7 @@ export function parseInvoicePromptLocally(prompt: string): AiInvoiceResult {
     // Rate extraction
     let rate = 0;
     const rateMatch =
-      /(?:@|at|rs\.?|inr|price|rate|each|costing)\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/i.exec(working) ||
+      /(?:@|at|rs\.?|inr|price|rate|each|costing|cost|costs|worth|valued\s+at|for)\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/i.exec(working) ||
       /(?:rs\.?|₹)\s*(\d+(?:\.\d+)?)/i.exec(working) ||
       /(\d+(?:\.\d+)?)\s*(?:\/(?:hr|hour|unit|nos|item|each)|each)/i.exec(working);
 
@@ -144,8 +144,8 @@ export function parseInvoicePromptLocally(prompt: string): AiInvoiceResult {
 
     // Clean remaining description
     let desc = working
-      .replace(/\s+(?:each|per\s+unit|per\s+item)$/i, "")
-      .replace(/^(?:of|for)\s+/i, "")
+      .replace(/\s+(?:worth|each|per\s+unit|per\s+item|costing|costs?|valued\s+at)$/i, "")
+      .replace(/^(?:of|for|worth)\s+/i, "")
       .replace(/[₹]/g, "")
       .replace(/\s+/g, " ")
       .trim();
