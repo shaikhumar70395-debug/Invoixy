@@ -17,7 +17,7 @@ export default async function SecurityPage() {
     .toUpperCase();
 
   return (
-    <div className="pb-16 max-w-4xl mx-auto space-y-6">
+    <div className="pb-16 max-w-2xl mx-auto space-y-6">
       {/* Page Header */}
       <header className="border-b border-slate-200/80 pb-4">
         <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
