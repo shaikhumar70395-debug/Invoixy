@@ -1,5 +1,5 @@
 import { InvoicePreviewScaler } from "@/components/InvoicePreviewScaler";
-import { formatDateDisplay, formatMoney } from "@/lib/format";
+import { formatDateDisplay, formatRs, formatQuantity } from "@/lib/format";
 import type { InvoiceDraft, InvoiceTotals, SellerProfile } from "@/lib/types";
 
 type Props = {
@@ -196,7 +196,7 @@ export function InvoicePreview({
                   {line.quantity || ""}
                 </Cell>
                 <Cell className="text-right tabular-nums">
-                  {line.rate ? `Rs. ${formatMoney(line.rate)}` : ""}
+                  {line.rate ? formatRs(line.rate) : ""}
                 </Cell>
                 <Cell className="text-center">{line.unit}</Cell>
                 <Cell className="text-right tabular-nums">
@@ -206,7 +206,7 @@ export function InvoicePreview({
                   {line.gstRatePercent || ""}
                 </Cell>
                 <Cell className="text-right tabular-nums font-medium">
-                  {line.amount ? `Rs. ${formatMoney(line.amount)}` : ""}
+                  {line.amount ? formatRs(line.amount) : ""}
                 </Cell>
               </tr>
             ))}
@@ -224,11 +224,11 @@ export function InvoicePreview({
                 Total
               </Cell>
               <Cell className="bg-zinc-50 text-right text-[10px] font-bold tabular-nums">
-                {formatMoney(totals.totalQuantity)}
+                {formatQuantity(totals.totalQuantity)}
               </Cell>
               <Cell colSpan={4} className="bg-zinc-50" />
               <Cell className="bg-zinc-50 text-right text-[10px] font-bold tabular-nums">
-                {`Rs. ${formatMoney(totals.subtotal)}`}
+                {formatRs(totals.subtotal)}
               </Cell>
             </tr>
             <tr className="bg-zinc-100">
@@ -246,7 +246,7 @@ export function InvoicePreview({
                       Output CGST @ {row.cgstRate}%
                     </Cell>
                     <Cell className="text-right text-[10px] tabular-nums">
-                      {`Rs. ${formatMoney(row.cgstAmount)}`}
+                      {formatRs(row.cgstAmount)}
                     </Cell>
                   </tr>,
                   <tr key={`sgst-${row.gstRatePercent}`}>
@@ -254,7 +254,7 @@ export function InvoicePreview({
                       Output SGST @ {row.sgstRate}%
                     </Cell>
                     <Cell className="text-right text-[10px] tabular-nums">
-                      {`Rs. ${formatMoney(row.sgstAmount)}`}
+                      {formatRs(row.sgstAmount)}
                     </Cell>
                   </tr>,
                 ])
@@ -264,7 +264,7 @@ export function InvoicePreview({
                       Output IGST @ {row.igstRate}%
                     </Cell>
                     <Cell className="text-right text-[10px] tabular-nums">
-                      {`Rs. ${formatMoney(row.igstAmount)}`}
+                      {formatRs(row.igstAmount)}
                     </Cell>
                   </tr>
                 ))}
@@ -273,7 +273,7 @@ export function InvoicePreview({
                 Round Off
               </Cell>
               <Cell className="text-right text-[10px] tabular-nums">
-                {`Rs. ${formatMoney(totals.roundOff)}`}
+                {formatRs(totals.roundOff)}
               </Cell>
             </tr>
             <tr className="bg-zinc-900">
@@ -281,7 +281,7 @@ export function InvoicePreview({
                 Grand Total
               </Cell>
               <Cell className="border-zinc-900 text-right text-sm font-bold tabular-nums text-white">
-                {`Rs. ${formatMoney(totals.grandTotal)}`}
+                {formatRs(totals.grandTotal)}
               </Cell>
             </tr>
             <tr>

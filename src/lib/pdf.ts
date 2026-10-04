@@ -1,5 +1,5 @@
 import PDFDocument from "pdfkit";
-import { formatDateDisplay, formatMoney } from "@/lib/format";
+import { formatDateDisplay, formatRs, formatQuantity } from "@/lib/format";
 import type { InvoiceDraft, InvoiceTotals, SellerProfile } from "@/lib/types";
 
 type PdfInvoiceInput = {
@@ -23,7 +23,7 @@ const COLORS = {
 };
 
 function money(value: number) {
-  return `Rs. ${formatMoney(value)}`;
+  return formatRs(value);
 }
 
 function textOrDash(value: string) {
@@ -136,44 +136,54 @@ function drawHeader(
   const logo = seller.logoDataUrl ? parseDataUrl(seller.logoDataUrl) : null;
   if (logo) {
     try {
-      doc.image(logo, x + 10, infoY + 14, { fit: [62, 62] });
+      doc.image(logo, x + 8, infoY + 12, { fit: [58, 58] });
     } catch {
       // Ignore invalid image data and continue rendering the invoice.
     }
   }
 
-  const sellerTextX = x + (logo ? 84 : 10);
-  const sellerTextWidth = leftWidth - (logo ? 94 : 20);
+  const sellerTextX = x + (logo ? 76 : 12);
+  const sellerTextWidth = leftWidth - (logo ? 86 : 24);
+
+  const companyName = seller.companyName.toUpperCase();
   doc
     .font("Helvetica-Bold")
-    .fontSize(15)
-    .fillColor(COLORS.ink)
-    .text(seller.companyName.toUpperCase(), sellerTextX, infoY + 14, {
-      width: sellerTextWidth,
-    });
+    .fontSize(11)
+    .fillColor(COLORS.ink);
+  const nameHeight = doc.heightOfString(companyName, { width: sellerTextWidth });
+  doc.text(companyName, sellerTextX, infoY + 10, {
+    width: sellerTextWidth,
+  });
+
+  const addressY = infoY + 10 + nameHeight + 4;
   doc
     .font("Helvetica")
-    .fontSize(7.8)
+    .fontSize(7.2)
     .fillColor(COLORS.muted)
-    .text(seller.address, sellerTextX, infoY + 35, {
+    .text(seller.address, sellerTextX, addressY, {
       width: sellerTextWidth,
-      lineGap: 1.2,
+      lineGap: 1.1,
     });
+
+  const panY = infoY + 84;
+  const gstinY = infoY + 97;
+  const stateY = infoY + 110;
+
   doc
     .font("Helvetica-Bold")
-    .fontSize(7.8)
+    .fontSize(7.6)
     .fillColor(COLORS.ink)
-    .text(`PAN: ${seller.pan}`, sellerTextX, infoY + 88, {
+    .text(`PAN: ${seller.pan}`, sellerTextX, panY, {
       width: sellerTextWidth,
     })
-    .text(`GSTIN/UIN: ${seller.gstin}`, sellerTextX, infoY + 100, {
+    .text(`GSTIN/UIN: ${seller.gstin}`, sellerTextX, gstinY, {
       width: sellerTextWidth,
     });
   doc
     .font("Helvetica")
-    .fontSize(7.6)
+    .fontSize(7.4)
     .fillColor(COLORS.muted)
-    .text(`State: ${seller.stateName}, Code: ${seller.stateCode}`, sellerTextX, infoY + 112, {
+    .text(`State: ${seller.stateName}, Code: ${seller.stateCode}`, sellerTextX, stateY, {
       width: sellerTextWidth,
     });
 
@@ -313,7 +323,7 @@ function drawItems(
     .fillColor(COLORS.ink)
     .text("Total", x + 8, y + 8, { width: 250, align: "right" })
     .text(money(totals.subtotal), x + 430, y + 8, { width: 62, align: "right" });
-  doc.text(formatMoney(totals.totalQuantity), x + 268, y + 8, {
+  doc.text(formatQuantity(totals.totalQuantity), x + 268, y + 8, {
     width: 40,
     align: "right",
   });
