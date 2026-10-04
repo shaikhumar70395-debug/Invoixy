@@ -17,6 +17,7 @@ import type {
 } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 type Props = {
   seller: SellerProfile;
@@ -45,7 +46,6 @@ export function InvoiceWorkspace({
   const [draft, setDraft] = useState<InvoiceDraft>(() =>
     applyTaxModeFromStates(initialDraft, seller),
   );
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [isSaving, startSaving] = useTransition();
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
@@ -93,34 +93,33 @@ export function InvoiceWorkspace({
         seller,
       ),
     );
-    setActionMessage(null);
+    toast.info("Sample invoice loaded");
   }
 
   function onResetForm() {
     if (isEditMode) {
       setDraft(applyTaxModeFromStates(initialDraft, seller));
+      toast.success("Invoice changes reset.");
     } else {
       setDraft(applyTaxModeFromStates(createEmptyInvoiceDraft(), seller));
       clearDraftAction().catch(() => null);
       setSaveStatus("idle");
+      toast.success("Form reset and draft cleared.");
     }
-    setActionMessage(isEditMode ? "Invoice changes reset." : "Form reset and draft cleared.");
   }
 
   function onPrintPreview() {
-    setActionMessage("Opening print dialog. Choose Save as PDF if needed.");
     window.setTimeout(() => window.print(), 50);
   }
 
   function onSaveInvoice() {
-    setActionMessage(isEditMode ? "Updating invoice..." : "Saving invoice...");
     startSaving(async () => {
       const result =
         isEditMode && invoiceId
           ? await updateInvoiceAction(invoiceId, draft)
           : await saveInvoiceAction(draft);
       if (!result.ok) {
-        setActionMessage(result.error);
+        toast.error(result.error);
         return;
       }
       // Clear the DB draft after a successful save in create mode
@@ -128,6 +127,7 @@ export function InvoiceWorkspace({
         await clearDraftAction();
         setSaveStatus("idle");
       }
+      toast.success(isEditMode ? "Invoice updated!" : "Invoice created successfully!");
       router.push(`/invoices/${result.id}`);
     });
   }
@@ -181,7 +181,7 @@ export function InvoiceWorkspace({
               variant="primary"
               onClick={onSaveInvoice}
               disabled={isSaving}
-              className="flex-1 sm:flex-none justify-center px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-bold shadow-sm"
+              className="flex-1 sm:flex-none justify-center px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-bold shadow-sm whitespace-nowrap"
             >
               <IconDocument className="h-4 w-4 shrink-0" />
               <span>
@@ -198,7 +198,7 @@ export function InvoiceWorkspace({
             <Button
               variant="secondary"
               onClick={onPrintPreview}
-              className="flex-1 sm:flex-none justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold"
+              className="flex-1 sm:flex-none justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
             >
               <IconPrinter className="h-4 w-4 shrink-0" />
               <span>Print / PDF</span>
@@ -251,12 +251,6 @@ export function InvoiceWorkspace({
                 {statusLabel[saveStatus]}
               </span>
             )}
-
-            {actionMessage ? (
-              <p className="w-full text-xs text-zinc-600" role="status">
-                {actionMessage}
-              </p>
-            ) : null}
           </div>
 
           <InvoiceForm
