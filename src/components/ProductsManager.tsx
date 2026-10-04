@@ -290,7 +290,6 @@ export function ProductsManager({ initialProducts, initialQuery }: Props) {
                   </SelectInput>
                 </Field>
               </div>
-              </div>
 
               {/* Card Footer Actions */}
               <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
