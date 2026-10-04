@@ -92,9 +92,9 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
 
   return (
     <form onSubmit={onSubmit} className="max-w-6xl mx-auto space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left Column: Company Details */}
-        <SectionCard title="Company Details" description="Details printed on every invoice" className="h-full">
+        <SectionCard title="Company Details" description="Details printed on every invoice">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Company name">
               <TextInput
@@ -157,7 +157,7 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
         </SectionCard>
 
         {/* Right Column: Branding & Bank Account */}
-        <div className="flex flex-col gap-6 h-full">
+        <div className="space-y-6">
           <SectionCard
             title="Branding"
             description="Logo printed on invoice headers and preview"
@@ -208,7 +208,6 @@ export function SellerSettingsForm({ initial, isLocal = true }: Props) {
           <SectionCard
             title="Bank Account"
             description="Payment details on the invoice footer"
-            className="flex-1 flex flex-col justify-between"
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Bank name">
