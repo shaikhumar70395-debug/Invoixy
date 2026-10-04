@@ -13,6 +13,7 @@
     "test:golden": "tsx scripts/golden-total.test.ts",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:push:turso": "node scripts/push-turso.mjs",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio"
   },
