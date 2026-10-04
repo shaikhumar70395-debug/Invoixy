@@ -20,53 +20,14 @@ export function parseInvoicePromptLocally(prompt: string): AiInvoiceResult {
     };
   }
 
-  // 1. Extract Buyer Name
-  let buyerName = "";
-  // Patterns like "invoice for/to [Name]", "bill [Name]", "for [Name] -"
-  const buyerMatch =
-    /(?:bill|invoice|for|client|customer)\s+([A-Za-z0-9&.\s]+?)(?:\s+(?:for|with|having|consisting|items?|products?|:\s|-|\u2014)|\s*,\s*|\s+(?:1|2|3|4|5|6|7|8|9|\d+)\s+)/i.exec(
-      text,
-    );
-
-  if (buyerMatch && buyerMatch[1]) {
-    const candidate = buyerMatch[1].trim();
-    // Exclude common noise words
-    if (!/^(an?|the|new|sample|quick)$/i.test(candidate)) {
-      buyerName = candidate
-        .replace(/^(an?|the)\s+/i, "")
-        .replace(/\s+(for|with)$/i, "")
-        .trim();
-    }
-  }
-
-  // Fallback buyer check if buyer name is still empty
-  if (!buyerName) {
-    const directFor = /for\s+([A-Za-z\s]+?)(?:\s+(?:at|with|\d+)|$)/i.exec(text);
-    if (directFor && directFor[1]) {
-      buyerName = directFor[1].trim();
-    }
-  }
-
-  // Check state code if mentioned (e.g., "in Gujarat", "Maharashtra")
-  let buyerState = "";
-  let buyerStateCode = "";
-  if (/maharashtra/i.test(text)) {
-    buyerState = "MAHARASHTRA";
-    buyerStateCode = "27";
-  } else if (/gujarat/i.test(text)) {
-    buyerState = "GUJARAT";
-    buyerStateCode = "24";
-  } else if (/delhi/i.test(text)) {
-    buyerState = "DELHI";
-    buyerStateCode = "07";
-  } else if (/karnataka/i.test(text)) {
-    buyerState = "KARNATAKA";
-    buyerStateCode = "29";
-  }
+  // 1. Normalize currency numbers by removing commas between digits (e.g. 1,19,900 -> 119900)
+  let norm = text
+    .replace(/(\d),(\d)/g, (m, a, b) => a + b)
+    .replace(/(\d),(\d)/g, (m, a, b) => a + b);
 
   // 2. Extract Global or Mentioned GST
   let defaultGst = 18;
-  const gstMatch = /(\d{1,2})\s*%\s*(?:gst|tax)/i.exec(text);
+  const gstMatch = /(\d{1,2})\s*%\s*(?:gst|tax)/i.exec(norm);
   if (gstMatch) {
     const parsedGst = Number(gstMatch[1]);
     if ([0, 5, 12, 18, 28].includes(parsedGst)) {
@@ -74,97 +35,128 @@ export function parseInvoicePromptLocally(prompt: string): AiInvoiceResult {
     }
   }
 
-  // 3. Extract Line Items
-  // Normalize currency symbols
-  const clean = text
-    .replace(/[₹]/g, "Rs. ")
-    .replace(/\s+/g, " ");
+  // Remove trailing or inline tax phrase so it does not interfere with line item chunking
+  norm = norm
+    .replace(/(?:with|having|incl\.?|including|plus|\+)?\s*\d{1,2}\s*%\s*(?:gst|tax)/gi, "")
+    .trim();
 
-  // Isolate the items part by removing the buyer prefix
-  let itemsPart = clean;
+  // 3. Extract Buyer Name
+  let buyerName = "";
+  const buyerMatch =
+    /(?:bill|invoice|for|client|customer)\s+([A-Za-z0-9&.\s]+?)(?:\s+(?:for|with|having|consisting|items?|products?|:\s|-|\u2014)|\s*,\s*|\s+(?:1|2|3|4|5|6|7|8|9|\d+)\s+)/i.exec(
+      norm,
+    );
+
+  if (buyerMatch && buyerMatch[1]) {
+    const candidate = buyerMatch[1].trim();
+    if (!/^(an?|the|new|sample|quick)$/i.test(candidate)) {
+      buyerName = candidate
+        .replace(/^(an?|the|for|to)\s+/i, "")
+        .replace(/\s+(for|with)$/i, "")
+        .trim();
+    }
+  }
+
+  if (!buyerName) {
+    const directFor = /for\s+([A-Za-z\s]+?)(?:\s+(?:at|with|\d+)|$)/i.exec(norm);
+    if (directFor && directFor[1]) {
+      buyerName = directFor[1].trim().replace(/^(for|to)\s+/i, "");
+    }
+  }
+
+  // Check state code if mentioned
+  let buyerState = "";
+  let buyerStateCode = "";
+  if (/maharashtra/i.test(norm)) {
+    buyerState = "MAHARASHTRA";
+    buyerStateCode = "27";
+  } else if (/gujarat/i.test(norm)) {
+    buyerState = "GUJARAT";
+    buyerStateCode = "24";
+  } else if (/delhi/i.test(norm)) {
+    buyerState = "DELHI";
+    buyerStateCode = "07";
+  } else if (/karnataka/i.test(norm)) {
+    buyerState = "KARNATAKA";
+    buyerStateCode = "29";
+  }
+
+  // 4. Extract Line Items
+  let itemsPart = norm;
   if (buyerName) {
-    const idx = clean.toLowerCase().indexOf(buyerName.toLowerCase());
+    const idx = norm.toLowerCase().indexOf(buyerName.toLowerCase());
     if (idx !== -1) {
-      itemsPart = clean.slice(idx + buyerName.length).trim();
-      // Remove leading prepositions
+      itemsPart = norm.slice(idx + buyerName.length).trim();
       itemsPart = itemsPart.replace(/^(for|with|having|:|-)\s+/i, "").trim();
     }
   }
 
   // Split into chunks by "and", comma, semicolon, or newline
   const rawChunks = itemsPart
-    .split(/(?:\s+and\s+|,|;|\n)/i)
+    .split(/(?:\s+and\s+|;|,|\n)/i)
     .map((c) => c.trim())
-    .filter((c) => c.length > 3);
+    .filter((c) => c.length > 2);
 
   const lines: InvoiceLineInput[] = [];
 
   rawChunks.forEach((chunk, index) => {
-    // Check if this chunk is purely tax or buyer info
-    if (/^\d{1,2}%\s*(?:gst|tax)/i.test(chunk)) return;
+    let working = chunk.trim();
 
-    // Extract quantity (e.g. "5 hours", "2 TVs", "10 units", "1 x")
+    // Rate extraction
+    let rate = 0;
+    const rateMatch =
+      /(?:@|at|rs\.?|inr|price|rate|each|costing)\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/i.exec(working) ||
+      /(?:rs\.?|₹)\s*(\d+(?:\.\d+)?)/i.exec(working) ||
+      /(\d+(?:\.\d+)?)\s*(?:\/(?:hr|hour|unit|nos|item|each)|each)/i.exec(working);
+
+    if (rateMatch) {
+      rate = Number(rateMatch[1]) || 0;
+      working = working.replace(rateMatch[0], " ");
+    }
+
+    // Quantity & unit extraction from beginning of chunk
     let qty = 1;
     let unit = "Nos";
+    const leadingQty =
+      /^(\d+(?:\.\d+)?)\s*(hours?|hrs?|nos?|units?|pcs?|items?|sets?|boxes?|months?|days?)?\s+/i.exec(
+        working,
+      );
 
-    const qtyMatch = /(?:^|\s)(\d+(?:\.\d+)?)\s*(hours?|hrs?|nos?|units?|pcs?|items?|sets?|boxes?|months?|days?)?/i.exec(
-      chunk,
-    );
-    if (qtyMatch) {
-      qty = Number(qtyMatch[1]) || 1;
-      if (qtyMatch[2]) {
-        const u = qtyMatch[2].toLowerCase();
+    if (leadingQty) {
+      qty = Number(leadingQty[1]) || 1;
+      if (leadingQty[2]) {
+        const u = leadingQty[2].toLowerCase();
         if (u.startsWith("hour") || u.startsWith("hr")) unit = "hrs";
         else if (u.startsWith("month")) unit = "months";
         else if (u.startsWith("day")) unit = "days";
         else if (u.startsWith("set")) unit = "SET";
-        else unit = "Nos";
       }
+      working = working.slice(leadingQty[0].length).trim();
     }
 
-    // Extract rate (e.g. "@ 2000", "at ₹2000", "Rs. 2000", "₹ 2000", "2000/hr", "each 2000")
-    let rate = 0;
-    const rateMatch = /(?:@|at|rs\.?|inr|price|rate|each)\s*(\d+(?:,\d+)*(?:\.\d+)?)/i.exec(chunk) ||
-                      /(\d+(?:,\d+)*(?:\.\d+)?)\s*(?:\/(?:hr|hour|unit|nos|item|each)|each)/i.exec(chunk);
-
-    if (rateMatch) {
-      rate = Number(rateMatch[1].replace(/,/g, "")) || 0;
-    } else {
-      // Check for any standalone large number that isn't the quantity
-      const allNumbers = chunk.match(/\b\d+(?:,\d+)*(?:\.\d+)?\b/g);
-      if (allNumbers && allNumbers.length > 1) {
-        const candidates = allNumbers.map((n) => Number(n.replace(/,/g, ""))).filter((n) => n !== qty);
-        if (candidates.length > 0) {
-          rate = Math.max(...candidates);
-        }
-      }
-    }
-
-    // Extract discount if any (e.g., "10% discount", "5% off")
+    // Discount extraction if any
     let discountPercent = 0;
-    const discMatch = /(\d{1,2})\s*%\s*(?:discount|disc|off)/i.exec(chunk);
+    const discMatch = /(\d{1,2})\s*%\s*(?:discount|disc|off)/i.exec(working);
     if (discMatch) {
       discountPercent = Number(discMatch[1]) || 0;
+      working = working.replace(discMatch[0], " ");
     }
 
-    // Clean up description
-    let desc = chunk
-      .replace(/(?:@|at|rs\.?|inr|price|rate|each)\s*(\d+(?:,\d+)*(?:\.\d+)?)/gi, "")
-      .replace(/(\d+(?:,\d+)*(?:\.\d+)?)\s*(?:\/(?:hr|hour|unit|nos|item|each)|each)/gi, "")
-      .replace(/(?:^|\s)\d+(?:\.\d+)?\s*(hours?|hrs?|nos?|units?|pcs?|items?|sets?|boxes?|months?|days?)?/gi, "")
-      .replace(/(\d{1,2})\s*%\s*(?:discount|disc|off|gst|tax)/gi, "")
+    // Clean remaining description
+    let desc = working
+      .replace(/\s+(?:each|per\s+unit|per\s+item)$/i, "")
+      .replace(/^(?:of|for)\s+/i, "")
       .replace(/[₹]/g, "")
       .replace(/\s+/g, " ")
       .trim();
 
-    // Capitalize first letter of description
     if (desc.length > 0) {
       desc = desc.charAt(0).toUpperCase() + desc.slice(1);
     } else {
-      desc = `Service / Item ${index + 1}`;
+      desc = `Item ${index + 1}`;
     }
 
-    if (rate > 0 || desc.length > 3) {
+    if (rate > 0 || desc.length > 2) {
       lines.push({
         id: `ai-${Date.now()}-${index}`,
         description: desc,
@@ -178,14 +170,14 @@ export function parseInvoicePromptLocally(prompt: string): AiInvoiceResult {
     }
   });
 
-  // If no lines could be extracted, generate a smart single line
+  // Fallback single line if nothing parsed
   if (lines.length === 0) {
-    const firstNumber = text.match(/\b\d+(?:,\d+)*(?:\.\d+)?\b/);
-    const fallbackRate = firstNumber ? Number(firstNumber[0].replace(/,/g, "")) : 1000;
+    const firstNumber = norm.match(/\b\d+(?:\.\d+)?\b/);
+    const fallbackRate = firstNumber ? Number(firstNumber[0]) : 1000;
     lines.push({
       id: `ai-${Date.now()}-0`,
       description: text.slice(0, 40),
-      hsnSac: "998314",
+      hsnSac: "85171200",
       quantity: 1,
       rate: fallbackRate,
       unit: "Nos",

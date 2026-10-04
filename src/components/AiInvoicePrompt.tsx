@@ -11,16 +11,16 @@ type Props = {
 
 const SAMPLE_PROMPTS = [
   {
-    label: "💻 Web Consulting",
-    text: "Bill Rahul Sharma for 5 hours of web consulting at ₹2,000/hr and 1 domain renewal at ₹1,200 with 18% GST",
+    label: "📱 Smartphones & Audio",
+    text: "Bill Amit Patel for 2 Apple iPhone 15 Pro at ₹1,19,900 each and 1 MagSafe Charger at ₹4,500 with 18% GST",
   },
   {
-    label: "📱 Electronics & Gadgets",
-    text: "Invoice Pooja Mehta for 2 Apple MacBooks at ₹1,20,000 each and 1 wireless mouse at ₹3,500 with 18% GST",
+    label: "💻 Laptops & IT Gear",
+    text: "Create invoice for Priya Enterprises for 5 Lenovo ThinkPad Laptops at ₹55,000 each and 5 Wireless Mice at ₹850 with 18% GST",
   },
   {
-    label: "📺 Home Appliances",
-    text: "Create invoice for Vikramaditya for 2 Sony Bravia TVs at ₹64,990 each and 1 soundbar at ₹14,990 with 18% GST",
+    label: "📺 Smart TVs & Audio",
+    text: "Invoice Rajesh Kumar for 1 Samsung 65-inch 4K OLED TV at ₹1,45,000 and 1 Sony Soundbar at ₹18,500 with 28% GST",
   },
 ];
 
