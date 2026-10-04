@@ -15,7 +15,7 @@ export const DEFAULT_SELLER: SellerProfile = {
   declaration:
     "We declare that this invoice shows the actual price of the electronic goods described and that all particulars are true and correct. Goods once sold are covered under respective manufacturer warranty.",
   invoicePrefix: "APEX",
-  logoDataUrl: "",
+  logoDataUrl: "/apex-logo.jpg",
 };
 
 function todayIso(): string {

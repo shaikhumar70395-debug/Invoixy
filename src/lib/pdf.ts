@@ -92,8 +92,20 @@ function drawMetaCell(
 
 function parseDataUrl(dataUrl: string): Buffer | null {
   const match = /^data:image\/[a-zA-Z0-9.+-]+;base64,(.+)$/.exec(dataUrl);
-  if (!match) return null;
-  return Buffer.from(match[1], "base64");
+  if (match) return Buffer.from(match[1], "base64");
+  if (dataUrl.startsWith("/")) {
+    try {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join(process.cwd(), "public", dataUrl.replace(/^\/+/, ""));
+      if (fs.existsSync(filePath)) {
+        return fs.readFileSync(filePath);
+      }
+    } catch {
+      // ignore fallback failure
+    }
+  }
+  return null;
 }
 
 function drawHeader(
