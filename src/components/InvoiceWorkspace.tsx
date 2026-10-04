@@ -264,7 +264,7 @@ export function InvoiceWorkspace({
             products={products}
           />
 
-          <aside className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs xl:hidden">
+          <aside className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
             <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Live invoice totals
             </p>
@@ -314,148 +314,54 @@ export function InvoiceWorkspace({
           </aside>
         </div>
 
-        <div className={`min-w-0 space-y-6 ${activeTab === "preview" ? "block" : "hidden xl:block"}`}>
-          <div>
-            <div className="no-print mb-3 flex flex-wrap items-end justify-between gap-2">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">Invoice preview</h2>
-                <p className="text-xs text-slate-500">A4 print surface, updates live</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold tabular-nums text-slate-700 shadow-2xs">
-                  {formatMoney(totals.grandTotal)}
-                </span>
-                <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-2xs">
-                  {(["fit", "actual"] as const).map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => setPreviewMode(option)}
-                      className={`rounded-md px-2 py-1 text-xs font-semibold transition-colors ${
-                        previewMode === option
-                          ? "bg-slate-900 text-white"
-                          : "text-slate-600 hover:text-slate-900"
-                      }`}
-                    >
-                      {option === "fit" ? "Fit" : "100%"}
-                    </button>
-                  ))}
-                </div>
-                <Button
-                  variant="secondary"
-                  className="px-3 py-1.5 text-xs"
-                  onClick={onPrintPreview}
-                >
-                  <IconPrinter className="h-3.5 w-3.5" />
-                  Print
-                </Button>
-              </div>
+        <div className={`min-w-0 xl:sticky xl:top-20 xl:self-start ${activeTab === "preview" ? "block" : "hidden xl:block"}`}>
+          <div className="no-print mb-3 flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900">Invoice preview</h2>
+              <p className="text-xs text-slate-500">A4 print surface, updates live</p>
             </div>
-            <div
-              id="invoice-print-surface"
-              className={`rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-inner sm:p-5 ${
-                previewMode === "actual" ? "max-h-[800px] overflow-auto" : "overflow-hidden"
-              }`}
-            >
-              <InvoicePreview
-                seller={seller}
-                draft={draft}
-                totals={totals}
-                logoUrl={seller.logoDataUrl}
-                previewMode={previewMode}
-              />
-            </div>
-          </div>
-
-          {/* Payment & Invoice Summary Card below preview */}
-          <aside className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Invoice Summary & Totals</h3>
-                <p className="text-xs text-slate-500">Live payable amount and tax breakdown</p>
-              </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200/60">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                GST Compliant
-              </span>
-            </div>
-
-            <dl className="grid gap-2.5 text-xs sm:grid-cols-2">
-              <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                <dt className="font-medium text-slate-500">Taxable Subtotal</dt>
-                <dd className="font-bold tabular-nums text-slate-800 text-sm">
-                  {formatMoney(totals.subtotal)}
-                </dd>
-              </div>
-              {draft.taxMode === "intra" ? (
-                <>
-                  <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                    <dt className="font-medium text-slate-500">CGST ({totals.cgstRate}%)</dt>
-                    <dd className="font-bold tabular-nums text-slate-800 text-sm">
-                      {formatMoney(totals.cgstAmount)}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                    <dt className="font-medium text-slate-500">SGST ({totals.sgstRate}%)</dt>
-                    <dd className="font-bold tabular-nums text-slate-800 text-sm">
-                      {formatMoney(totals.sgstAmount)}
-                    </dd>
-                  </div>
-                </>
-              ) : (
-                <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                  <dt className="font-medium text-slate-500">IGST ({totals.igstRate}%)</dt>
-                  <dd className="font-bold tabular-nums text-slate-800 text-sm">
-                    {formatMoney(totals.igstAmount)}
-                  </dd>
-                </div>
-              )}
-              <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-                <dt className="font-medium text-slate-500">Round off</dt>
-                <dd className="font-bold tabular-nums text-slate-800 text-sm">
-                  {formatMoney(totals.roundOff)}
-                </dd>
-              </div>
-            </dl>
-
-            <div className="flex items-center justify-between rounded-xl bg-slate-900 p-4 text-white">
-              <div>
-                <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Grand Total</p>
-                <p className="text-xs text-slate-400 font-normal">All taxes & rounding applied</p>
-              </div>
-              <p className="text-2xl font-black tabular-nums tracking-tight text-white">
+            <div className="flex items-center gap-2">
+              <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold tabular-nums text-slate-700 shadow-2xs">
                 {formatMoney(totals.grandTotal)}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 pt-1">
-              <Button
-                variant="primary"
-                onClick={onSaveInvoice}
-                disabled={isSaving}
-                className="flex-1 justify-center py-2.5 font-bold shadow-xs"
-              >
-                <IconDocument className="h-4 w-4 shrink-0" />
-                <span>
-                  {isSaving
-                    ? isEditMode
-                      ? "Updating..."
-                      : "Saving..."
-                    : isEditMode
-                      ? "Update invoice"
-                      : "Save invoice"}
-                </span>
-              </Button>
+              </span>
+              <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-2xs">
+                {(["fit", "actual"] as const).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setPreviewMode(option)}
+                    className={`rounded-md px-2 py-1 text-xs font-semibold transition-colors ${
+                      previewMode === option
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    {option === "fit" ? "Fit" : "100%"}
+                  </button>
+                ))}
+              </div>
               <Button
                 variant="secondary"
+                className="px-3 py-1.5 text-xs"
                 onClick={onPrintPreview}
-                className="px-4 py-2.5 font-semibold"
               >
-                <IconPrinter className="h-4 w-4 shrink-0" />
-                <span>Print / PDF</span>
+                <IconPrinter className="h-3.5 w-3.5" />
+                Print
               </Button>
             </div>
-          </aside>
+          </div>
+          <div
+            id="invoice-print-surface"
+            className="max-h-[calc(100vh-6rem)] overflow-auto rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-inner sm:p-5"
+          >
+            <InvoicePreview
+              seller={seller}
+              draft={draft}
+              totals={totals}
+              logoUrl={seller.logoDataUrl}
+              previewMode={previewMode}
+            />
+          </div>
         </div>
       </div>
     </div>
